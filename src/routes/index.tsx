@@ -168,7 +168,7 @@ function Index() {
       {/* ====== Hero ====== */}
       <section className="relative h-screen min-h-[700px] flex flex-col justify-end p-6 md:p-16 overflow-hidden noise">
         {/* Video background */}
-        <div className="absolute inset-0 z-0">
+        <div className="absolute inset-0 z-0" aria-hidden="true">
           <video
             src={heroVideo.url}
             poster={heroImg}
@@ -176,8 +176,11 @@ function Index() {
             muted
             loop
             playsInline
+            preload="metadata"
+            tabIndex={-1}
             className="w-full h-full object-cover opacity-55 animate-drift"
           />
+
           <div className="absolute inset-0 bg-gradient-to-t from-background via-background/60 to-background/30" />
           <div className="absolute inset-0 bg-gradient-to-r from-background/80 via-transparent to-background/40" />
         </div>
@@ -340,25 +343,28 @@ function Index() {
 
           <Reveal delay={150}>
             <div className="relative group overflow-hidden border border-white/10 glow-accent">
-              <video
+              <VideoPlayer
                 src={showreelVideo.url}
                 poster={heroImg}
-                autoPlay
-                muted
                 loop
-                playsInline
-                className="w-full aspect-video object-cover"
+                ariaLabel="Showreel LE H 2024"
+                className="aspect-video"
+                captions={[
+                  {
+                    src: "/captions/showreel.fr.vtt",
+                    label: "Français",
+                    srcLang: "fr",
+                    default: true,
+                  },
+                ]}
               />
-              <div className="absolute inset-0 bg-gradient-to-t from-background/60 via-transparent to-transparent pointer-events-none" />
               {/* Corner brackets */}
-              <span className="absolute top-4 left-4 size-6 border-t-2 border-l-2 border-accent" />
-              <span className="absolute top-4 right-4 size-6 border-t-2 border-r-2 border-accent" />
-              <span className="absolute bottom-4 left-4 size-6 border-b-2 border-l-2 border-accent" />
-              <span className="absolute bottom-4 right-4 size-6 border-b-2 border-r-2 border-accent" />
-              <div className="absolute bottom-6 left-1/2 -translate-x-1/2 text-[10px] uppercase tracking-[0.3em] text-white/80 font-mono pointer-events-none">
-                ● REC / LE H / 2024
-              </div>
+              <span className="pointer-events-none absolute top-4 left-4 size-6 border-t-2 border-l-2 border-accent" />
+              <span className="pointer-events-none absolute top-4 right-4 size-6 border-t-2 border-r-2 border-accent" />
+              <span className="pointer-events-none absolute bottom-4 left-4 size-6 border-b-2 border-l-2 border-accent" />
+              <span className="pointer-events-none absolute bottom-4 right-4 size-6 border-b-2 border-r-2 border-accent" />
             </div>
+
           </Reveal>
 
           {/* Stats strip */}
