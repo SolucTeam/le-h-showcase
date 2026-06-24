@@ -6,20 +6,47 @@ import showreelVideo from "@/assets/showreel.mp4.asset.json";
 import festivalImg from "@/assets/perf-festival.jpg";
 import galaImg from "@/assets/perf-gala.jpg";
 import clubImg from "@/assets/perf-club.jpg";
+import { VideoPlayer } from "@/components/VideoPlayer";
+
+const BOOKING_EMAIL = "lehbookingpro@gmail.com";
 
 export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
-      { title: "LE H — Master of Ceremonies & Host" },
+      { title: "LE H — Master of Ceremonies & Host | Booking MC International" },
       {
         name: "description",
         content:
-          "LE H, MC et host. L'énergie qui transforme votre événement en expérience partagée. Mariages, clubs, festivals, corporate.",
+          "LE H — MC & Host professionnel. Mariages, galas, clubs, festivals et événements corporate. Booking international 2024–2025 : lehbookingpro@gmail.com",
       },
-      { property: "og:title", content: "LE H — Master of Ceremonies" },
+      { name: "keywords", content: "MC, host, master of ceremonies, animateur, mariage, gala, festival, club, événementiel, LE H, booking" },
+      { property: "og:title", content: "LE H — Master of Ceremonies & Host" },
       {
         property: "og:description",
-        content: "Host, MC & Crowd Catalyst. Voice. Rhythm. Presence.",
+        content: "Host, MC & Crowd Catalyst. Voice. Rhythm. Presence. Booking 2024–2025.",
+      },
+      { property: "og:image", content: heroImg },
+      { property: "og:image:alt", content: "LE H — MC sur scène avec micro, lumières lasers" },
+      { property: "og:url", content: "/" },
+      { name: "twitter:title", content: "LE H — Master of Ceremonies & Host" },
+      { name: "twitter:description", content: "Host, MC & Crowd Catalyst. Booking 2024–2025." },
+      { name: "twitter:image", content: heroImg },
+    ],
+    links: [{ rel: "canonical", href: "/" }],
+    scripts: [
+      {
+        type: "application/ld+json",
+        children: JSON.stringify({
+          "@context": "https://schema.org",
+          "@type": "Person",
+          name: "LE H",
+          jobTitle: "Master of Ceremonies & Host",
+          description: "MC, host et animateur événementiel international.",
+          email: `mailto:${BOOKING_EMAIL}`,
+          image: heroImg,
+          knowsLanguage: ["fr", "en", "es"],
+          areaServed: "Worldwide",
+        }),
       },
     ],
   }),
@@ -141,7 +168,7 @@ function Index() {
       {/* ====== Hero ====== */}
       <section className="relative h-screen min-h-[700px] flex flex-col justify-end p-6 md:p-16 overflow-hidden noise">
         {/* Video background */}
-        <div className="absolute inset-0 z-0">
+        <div className="absolute inset-0 z-0" aria-hidden="true">
           <video
             src={heroVideo.url}
             poster={heroImg}
@@ -149,8 +176,11 @@ function Index() {
             muted
             loop
             playsInline
+            preload="metadata"
+            tabIndex={-1}
             className="w-full h-full object-cover opacity-55 animate-drift"
           />
+
           <div className="absolute inset-0 bg-gradient-to-t from-background via-background/60 to-background/30" />
           <div className="absolute inset-0 bg-gradient-to-r from-background/80 via-transparent to-background/40" />
         </div>
@@ -313,25 +343,28 @@ function Index() {
 
           <Reveal delay={150}>
             <div className="relative group overflow-hidden border border-white/10 glow-accent">
-              <video
+              <VideoPlayer
                 src={showreelVideo.url}
                 poster={heroImg}
-                autoPlay
-                muted
                 loop
-                playsInline
-                className="w-full aspect-video object-cover"
+                ariaLabel="Showreel LE H 2024"
+                className="aspect-video"
+                captions={[
+                  {
+                    src: "/captions/showreel.fr.vtt",
+                    label: "Français",
+                    srcLang: "fr",
+                    default: true,
+                  },
+                ]}
               />
-              <div className="absolute inset-0 bg-gradient-to-t from-background/60 via-transparent to-transparent pointer-events-none" />
               {/* Corner brackets */}
-              <span className="absolute top-4 left-4 size-6 border-t-2 border-l-2 border-accent" />
-              <span className="absolute top-4 right-4 size-6 border-t-2 border-r-2 border-accent" />
-              <span className="absolute bottom-4 left-4 size-6 border-b-2 border-l-2 border-accent" />
-              <span className="absolute bottom-4 right-4 size-6 border-b-2 border-r-2 border-accent" />
-              <div className="absolute bottom-6 left-1/2 -translate-x-1/2 text-[10px] uppercase tracking-[0.3em] text-white/80 font-mono pointer-events-none">
-                ● REC / LE H / 2024
-              </div>
+              <span className="pointer-events-none absolute top-4 left-4 size-6 border-t-2 border-l-2 border-accent" />
+              <span className="pointer-events-none absolute top-4 right-4 size-6 border-t-2 border-r-2 border-accent" />
+              <span className="pointer-events-none absolute bottom-4 left-4 size-6 border-b-2 border-l-2 border-accent" />
+              <span className="pointer-events-none absolute bottom-4 right-4 size-6 border-b-2 border-r-2 border-accent" />
             </div>
+
           </Reveal>
 
           {/* Stats strip */}
