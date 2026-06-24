@@ -10,6 +10,7 @@ import {
 import { useEffect, type ReactNode } from "react";
 
 import appCss from "../styles.css?url";
+import heroImg from "@/assets/hero.jpg";
 import { reportLovableError } from "../lib/lovable-error-reporting";
 
 function NotFoundComponent() {
@@ -77,11 +78,11 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
     meta: [
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
-      { title: "LE H — Master of Ceremonies & Host" },
-      { name: "description", content: "LE H, MC et host. L'énergie qui transforme votre scène en expérience partagée. Mariages, clubs, festivals, événements corporate." },
-      { property: "og:title", content: "LE H — Master of Ceremonies" },
-      { property: "og:description", content: "Host, MC & Crowd Catalyst. Voice. Rhythm. Presence." },
+      { name: "theme-color", content: "#0a0a0a" },
+      { name: "robots", content: "index, follow" },
+      { property: "og:site_name", content: "LE H" },
       { property: "og:type", content: "website" },
+      { property: "og:locale", content: "fr_FR" },
       { name: "twitter:card", content: "summary_large_image" },
     ],
     links: [
@@ -89,6 +90,7 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       { rel: "preconnect", href: "https://fonts.googleapis.com" },
       { rel: "preconnect", href: "https://fonts.gstatic.com", crossOrigin: "anonymous" },
       { rel: "stylesheet", href: "https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Syncopate:wght@400;700&display=swap" },
+      { rel: "preload", as: "image", href: heroImg, fetchpriority: "high" },
     ],
   }),
   shellComponent: RootShell,
@@ -99,7 +101,7 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
 
 function RootShell({ children }: { children: ReactNode }) {
   return (
-    <html lang="en">
+    <html lang="fr">
       <head>
         <HeadContent />
       </head>
