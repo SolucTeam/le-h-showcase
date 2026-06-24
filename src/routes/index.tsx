@@ -6,20 +6,47 @@ import showreelVideo from "@/assets/showreel.mp4.asset.json";
 import festivalImg from "@/assets/perf-festival.jpg";
 import galaImg from "@/assets/perf-gala.jpg";
 import clubImg from "@/assets/perf-club.jpg";
+import { VideoPlayer } from "@/components/VideoPlayer";
+
+const BOOKING_EMAIL = "lehbookingpro@gmail.com";
 
 export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
-      { title: "LE H — Master of Ceremonies & Host" },
+      { title: "LE H — Master of Ceremonies & Host | Booking MC International" },
       {
         name: "description",
         content:
-          "LE H, MC et host. L'énergie qui transforme votre événement en expérience partagée. Mariages, clubs, festivals, corporate.",
+          "LE H — MC & Host professionnel. Mariages, galas, clubs, festivals et événements corporate. Booking international 2024–2025 : lehbookingpro@gmail.com",
       },
-      { property: "og:title", content: "LE H — Master of Ceremonies" },
+      { name: "keywords", content: "MC, host, master of ceremonies, animateur, mariage, gala, festival, club, événementiel, LE H, booking" },
+      { property: "og:title", content: "LE H — Master of Ceremonies & Host" },
       {
         property: "og:description",
-        content: "Host, MC & Crowd Catalyst. Voice. Rhythm. Presence.",
+        content: "Host, MC & Crowd Catalyst. Voice. Rhythm. Presence. Booking 2024–2025.",
+      },
+      { property: "og:image", content: heroImg },
+      { property: "og:image:alt", content: "LE H — MC sur scène avec micro, lumières lasers" },
+      { property: "og:url", content: "/" },
+      { name: "twitter:title", content: "LE H — Master of Ceremonies & Host" },
+      { name: "twitter:description", content: "Host, MC & Crowd Catalyst. Booking 2024–2025." },
+      { name: "twitter:image", content: heroImg },
+    ],
+    links: [{ rel: "canonical", href: "/" }],
+    scripts: [
+      {
+        type: "application/ld+json",
+        children: JSON.stringify({
+          "@context": "https://schema.org",
+          "@type": "Person",
+          name: "LE H",
+          jobTitle: "Master of Ceremonies & Host",
+          description: "MC, host et animateur événementiel international.",
+          email: `mailto:${BOOKING_EMAIL}`,
+          image: heroImg,
+          knowsLanguage: ["fr", "en", "es"],
+          areaServed: "Worldwide",
+        }),
       },
     ],
   }),
