@@ -161,10 +161,10 @@ function Index() {
           <a href="#prestations" className="hover:text-accent transition-colors">Prestations</a>
           <a href="#showreel" className="hover:text-accent transition-colors">Showreel</a>
           <a href="#about" className="hover:text-accent transition-colors">À propos</a>
-          <a href="#contact" className="hover:text-accent transition-colors">Contact</a>
+          <a href="mailto:lehbookingpro@gmail.com" className="hover:text-accent transition-colors">Contact</a>
         </div>
         <a
-          href="#contact"
+          href="mailto:lehbookingpro@gmail.com"
           className="text-[11px] font-bold uppercase tracking-[0.2em] bg-accent text-accent-foreground px-4 py-2 rounded-sm hover:bg-white transition-colors"
         >
           Booking
@@ -227,7 +227,7 @@ function Index() {
                 </div>
               </a>
               <a
-                href="#contact"
+                href="mailto:lehbookingpro@gmail.com"
                 className="px-8 py-4 border border-white/15 text-white font-bold uppercase tracking-[0.2em] text-xs hover:bg-white/5 transition-colors"
               >
                 Réserver
@@ -517,7 +517,7 @@ function Index() {
           <Reveal delay={150}>
             <div className="flex flex-wrap justify-center gap-4 mb-12">
               <a
-                href="mailto:booking@leh.com"
+                href="mailto:lehbookingpro@gmail.com"
                 className="group relative px-10 py-5 bg-accent text-accent-foreground font-display text-base md:text-lg uppercase tracking-tighter hover:bg-white transition-colors"
               >
                 Book Now
@@ -530,8 +530,8 @@ function Index() {
               </a>
             </div>
             <div className="flex flex-wrap justify-center gap-8 text-[11px] uppercase tracking-[0.3em] text-white/60 font-bold">
-              <a href="mailto:booking@leh.com" className="hover:text-accent transition-colors">
-                booking@leh.com
+              <a href="mailto:lehbookingpro@gmail.com" className="hover:text-accent transition-colors">
+                lehbookingpro@gmail.com
               </a>
               <span className="text-white/20">/</span>
               <a href="tel:+33000000000" className="hover:text-accent transition-colors">
