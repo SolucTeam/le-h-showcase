@@ -1,11 +1,17 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useEffect, useRef, useState } from "react";
-import heroImg from "@/assets/hero.jpg";
+import heroAsset from "@/assets/leh-hero.jpg.asset.json";
+import festivalAsset from "@/assets/leh-festival.jpg.asset.json";
+import galaAsset from "@/assets/leh-gala.jpg.asset.json";
+import clubAsset from "@/assets/leh-club.jpg.asset.json";
+import portraitAsset from "@/assets/leh-portrait.jpg.asset.json";
 import heroVideo from "@/assets/hero-video.mp4.asset.json";
 import showreelVideo from "@/assets/showreel.mp4.asset.json";
-import festivalImg from "@/assets/perf-festival.jpg";
-import galaImg from "@/assets/perf-gala.jpg";
-import clubImg from "@/assets/perf-club.jpg";
+const heroImg = heroAsset.url;
+const festivalImg = festivalAsset.url;
+const galaImg = galaAsset.url;
+const clubImg = clubAsset.url;
+const portraitImg = portraitAsset.url;
 import { VideoPlayer } from "@/components/VideoPlayer";
 
 const BOOKING_EMAIL = "lehbookingpro@gmail.com";
