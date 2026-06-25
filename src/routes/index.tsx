@@ -446,7 +446,7 @@ function Index() {
           <Reveal delay={200} className="md:col-span-5">
             <div className="relative aspect-[4/5] overflow-hidden border border-white/10 noise">
               <img
-                src={galaImg}
+                src={portraitImg}
                 alt="LE H portrait"
                 loading="lazy"
                 width={1024}
