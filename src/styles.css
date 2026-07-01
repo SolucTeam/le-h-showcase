@@ -34,17 +34,19 @@
 }
 
 :root {
-  --background: oklch(0.13 0 0);
+  --background: oklch(0.13 0.01 40);
   --foreground: oklch(0.98 0 0);
-  --surface: oklch(0.18 0 0);
-  --surface-elevated: oklch(0.22 0 0);
-  --accent: oklch(0.92 0.22 130);
+  --surface: oklch(0.18 0.015 40);
+  --surface-elevated: oklch(0.22 0.02 40);
+  --accent: oklch(0.78 0.18 55);
+  --accent-2: oklch(0.68 0.22 30);
   --accent-foreground: oklch(0.13 0 0);
-  --muted: oklch(0.22 0 0);
+  --muted: oklch(0.22 0.01 40);
   --muted-foreground: oklch(0.68 0 0);
   --border: oklch(1 0 0 / 0.08);
   --radius: 4px;
 }
+
 
 .dark {
   --background: oklch(0.13 0 0);
