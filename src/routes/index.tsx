@@ -13,6 +13,7 @@ const galaImg = galaAsset.url;
 const clubImg = clubAsset.url;
 const portraitImg = portraitAsset.url;
 import { VideoPlayer } from "@/components/VideoPlayer";
+import { LangSwitcher, useI18n } from "@/lib/i18n";
 
 const BOOKING_EMAIL = "lehbookingpro@gmail.com";
 
@@ -23,9 +24,9 @@ export const Route = createFileRoute("/")({
       {
         name: "description",
         content:
-          "LE H — MC & Host professionnel. Mariages, galas, clubs, festivals et événements corporate. Booking international 2024–2025 : lehbookingpro@gmail.com",
+          "LE H — MC & Host professionnel. Galas, clubs, festivals, événements corporate et lancements. Booking international : lehbookingpro@gmail.com",
       },
-      { name: "keywords", content: "MC, host, master of ceremonies, animateur, mariage, gala, festival, club, événementiel, LE H, booking" },
+      { name: "keywords", content: "MC, host, master of ceremonies, animateur, gala, festival, club, corporate, LE H, booking" },
       { property: "og:title", content: "LE H — Master of Ceremonies & Host" },
       {
         property: "og:description",
@@ -100,79 +101,81 @@ function Reveal({
   );
 }
 
-const PRESTATIONS = [
-  {
-    n: "01",
-    tag: "Festivals",
-    title: "Mainstage\nTakeovers",
-    desc: "Maîtriser les grandes scènes, annoncer les artistes, tenir l'intensité de la foule.",
-    img: festivalImg,
-    offset: "",
-  },
-  {
-    n: "02",
-    tag: "Galas & Mariages",
-    title: "Gala &\nAward Nights",
-    desc: "Une conduite de soirée élégante et rythmée, du cocktail jusqu'au bouquet final.",
-    img: galaImg,
-    offset: "md:mt-24",
-  },
-  {
-    n: "03",
-    tag: "Clubs",
-    title: "The\nCatalyst Set",
-    desc: "Hype, transitions, freestyle au mic. Une connexion totale avec le dancefloor.",
-    img: clubImg,
-    offset: "",
-  },
-] as const;
-
-const STATS = [
-  { v: "300+", l: "Événements" },
-  { v: "12", l: "Pays" },
-  { v: "50K", l: "PAX cumulés" },
-  { v: "08", l: "Années" },
-];
-
-const TESTIMONIALS = [
-  {
-    q: "Le H a transformé notre soirée en moment magique. Un vrai chef d'orchestre de l'ambiance.",
-    a: "Sophie & Thomas — Mariage, Juillet 2023",
-  },
-  {
-    q: "Sens du timing parfait. Il a capté 400 invités dès les premières secondes.",
-    a: "Marc D. — LuxMedia",
-  },
-  {
-    q: "L'énergie d'un festival concentrée dans une voix. On le rebooke en 2024.",
-    a: "Kevin R. — Urban Fest",
-  },
-];
+// Cursor-tracking spotlight
+function useSpotlight<T extends HTMLElement>() {
+  const ref = useRef<T | null>(null);
+  useEffect(() => {
+    const el = ref.current;
+    if (!el) return;
+    const handle = (e: MouseEvent) => {
+      const rect = el.getBoundingClientRect();
+      el.style.setProperty("--mx", `${e.clientX - rect.left}px`);
+      el.style.setProperty("--my", `${e.clientY - rect.top}px`);
+    };
+    el.addEventListener("mousemove", handle);
+    return () => el.removeEventListener("mousemove", handle);
+  }, []);
+  return ref;
+}
 
 function Index() {
+  const { t } = useI18n();
+  const spotRef = useSpotlight<HTMLDivElement>();
+
+  const PRESTATIONS = [
+    { n: "01", tag: t("prest.1.tag"), title: t("prest.1.title"), desc: t("prest.1.desc"), img: festivalImg, offset: "" },
+    { n: "02", tag: t("prest.2.tag"), title: t("prest.2.title"), desc: t("prest.2.desc"), img: galaImg, offset: "md:mt-24" },
+    { n: "03", tag: t("prest.3.tag"), title: t("prest.3.title"), desc: t("prest.3.desc"), img: clubImg, offset: "" },
+  ];
+
+  const STATS = [
+    { v: "300+", l: t("stats.events") },
+    { v: "12", l: t("stats.countries") },
+    { v: "50K", l: t("stats.pax") },
+    { v: "08", l: t("stats.years") },
+  ];
+
+  const TESTIMONIALS = [
+    { q: t("testi.1.q"), a: t("testi.1.a") },
+    { q: t("testi.2.q"), a: t("testi.2.a") },
+    { q: t("testi.3.q"), a: t("testi.3.a") },
+  ];
+
+  const marqueeWords = [t("marquee.1"), t("marquee.2"), t("marquee.3"), t("marquee.4"), t("marquee.5"), t("marquee.6")];
+
   return (
     <div className="min-h-screen bg-background text-foreground font-sans overflow-x-hidden">
       {/* ====== Navigation ====== */}
       <nav className="fixed top-0 inset-x-0 z-50 flex justify-between items-center px-6 md:px-12 py-6 mix-blend-difference">
         <a href="#" className="font-display text-xl tracking-tighter text-white">
-          LE H<span className="text-accent">.</span>
+          LE H<span className="text-accent animate-flicker">.</span>
         </a>
         <div className="hidden md:flex gap-8 text-[11px] font-bold uppercase tracking-[0.2em] text-white">
-          <a href="#prestations" className="hover:text-accent transition-colors">Prestations</a>
-          <a href="#showreel" className="hover:text-accent transition-colors">Showreel</a>
-          <a href="#about" className="hover:text-accent transition-colors">À propos</a>
-          <a href="mailto:lehbookingpro@gmail.com" className="hover:text-accent transition-colors">Contact</a>
+          <a href="#prestations" className="hover:text-accent transition-colors">{t("nav.prestations")}</a>
+          <a href="#showreel" className="hover:text-accent transition-colors">{t("nav.showreel")}</a>
+          <a href="#about" className="hover:text-accent transition-colors">{t("nav.about")}</a>
+          <a href={`mailto:${BOOKING_EMAIL}`} className="hover:text-accent transition-colors">{t("nav.contact")}</a>
         </div>
-        <a
-          href="mailto:lehbookingpro@gmail.com"
-          className="text-[11px] font-bold uppercase tracking-[0.2em] bg-accent text-accent-foreground px-4 py-2 rounded-sm hover:bg-white transition-colors"
-        >
-          Booking
-        </a>
+        <div className="flex items-center gap-4">
+          <LangSwitcher className="hidden sm:inline-flex" />
+          <a
+            href={`mailto:${BOOKING_EMAIL}`}
+            className="text-[11px] font-bold uppercase tracking-[0.2em] bg-accent text-accent-foreground px-4 py-2 rounded-sm hover:bg-white transition-colors"
+          >
+            {t("nav.booking")}
+          </a>
+        </div>
       </nav>
 
       {/* ====== Hero ====== */}
-      <section className="relative h-screen min-h-[700px] flex flex-col justify-end p-6 md:p-16 overflow-hidden noise">
+      <section
+        ref={spotRef}
+        className="relative h-screen min-h-[700px] flex flex-col justify-end p-6 md:p-16 overflow-hidden noise"
+        style={{ ["--mx" as string]: "50%", ["--my" as string]: "50%" } as React.CSSProperties}
+      >
+        {/* Aurora warm background */}
+        <div className="aurora-bg" aria-hidden="true" />
+
         {/* Video background */}
         <div className="absolute inset-0 z-0" aria-hidden="true">
           <video
@@ -186,10 +189,19 @@ function Index() {
             tabIndex={-1}
             className="w-full h-full object-cover opacity-55 animate-drift"
           />
-
           <div className="absolute inset-0 bg-gradient-to-t from-background via-background/60 to-background/30" />
           <div className="absolute inset-0 bg-gradient-to-r from-background/80 via-transparent to-background/40" />
         </div>
+
+        {/* Cursor spotlight */}
+        <div
+          className="pointer-events-none absolute inset-0 z-[1] opacity-70 transition-opacity duration-500"
+          style={{
+            background:
+              "radial-gradient(400px circle at var(--mx) var(--my), color-mix(in oklab, var(--accent) 25%, transparent), transparent 70%)",
+          }}
+          aria-hidden="true"
+        />
 
         {/* Scanline accent */}
         <div className="absolute inset-y-0 left-0 w-px bg-gradient-to-b from-transparent via-accent/40 to-transparent" />
@@ -197,40 +209,51 @@ function Index() {
         {/* Top meta */}
         <div className="absolute top-24 md:top-32 left-6 md:left-16 z-10 flex items-center gap-3 text-[10px] uppercase tracking-[0.3em] text-white/70 animate-fade-up">
           <span className="size-2 rounded-full bg-accent animate-pulse-dot" />
-          Booking 2024 — 2025
+          {t("hero.status")}
+        </div>
+
+        {/* Rotating badge top-right */}
+        <div className="hidden md:block absolute top-28 right-16 z-10">
+          <div className="relative size-24 animate-spin-slow">
+            <svg viewBox="0 0 100 100" className="w-full h-full text-accent">
+              <defs>
+                <path id="circ" d="M50,50 m-38,0 a38,38 0 1,1 76,0 a38,38 0 1,1 -76,0" />
+              </defs>
+              <text fontSize="9" letterSpacing="3" fill="currentColor" fontFamily="var(--font-display)">
+                <textPath href="#circ">LE H • LIVE • BOOKING • 2024 • </textPath>
+              </text>
+            </svg>
+            <span className="absolute inset-0 flex items-center justify-center text-accent text-xl">✦</span>
+          </div>
         </div>
 
         <div className="relative z-10 max-w-6xl animate-fade-up">
           <p className="text-[11px] uppercase tracking-[0.3em] text-accent font-bold mb-6">
-            Master of Ceremonies / Host
+            {t("hero.role")}
           </p>
           <h1 className="font-display text-[18vw] md:text-[12vw] leading-[0.85] tracking-tighter uppercase">
-            Master of
+            {t("hero.title1")}
             <br />
-            <span className="text-accent glow-text italic">Energy</span>
+            <span className="shimmer-text italic animate-glow">{t("hero.title2")}</span>
           </h1>
 
           <div className="mt-10 flex flex-col md:flex-row md:items-end justify-between gap-8">
             <p className="max-w-md text-white/70 text-base md:text-lg leading-relaxed">
-              Host, MC & Crowd Catalyst. Je transforme les scènes en expériences
-              partagées — par la voix, le rythme et la présence.
+              {t("hero.desc")}
             </p>
             <div className="flex flex-wrap gap-4">
-              <a
-                href="#showreel"
-                className="group relative cursor-pointer"
-              >
-                <div className="absolute -inset-1 bg-accent opacity-30 group-hover:opacity-60 blur-md transition-opacity" />
+              <a href="#showreel" className="group relative cursor-pointer">
+                <div className="absolute -inset-1 bg-accent opacity-30 group-hover:opacity-70 blur-md transition-opacity animate-pulse-dot" />
                 <div className="relative px-8 py-4 bg-background border border-accent/60 text-accent font-bold uppercase tracking-[0.2em] text-xs flex items-center gap-3">
                   <span className="size-2 rounded-full bg-accent animate-pulse-dot" />
-                  Watch Showreel
+                  {t("hero.cta.showreel")}
                 </div>
               </a>
               <a
-                href="mailto:lehbookingpro@gmail.com"
-                className="px-8 py-4 border border-white/15 text-white font-bold uppercase tracking-[0.2em] text-xs hover:bg-white/5 transition-colors"
+                href={`mailto:${BOOKING_EMAIL}`}
+                className="px-8 py-4 border border-white/15 text-white font-bold uppercase tracking-[0.2em] text-xs hover:bg-accent hover:text-accent-foreground hover:border-accent transition-colors"
               >
-                Réserver
+                {t("hero.cta.book")}
               </a>
             </div>
           </div>
@@ -238,9 +261,9 @@ function Index() {
 
         {/* Bottom strip */}
         <div className="absolute bottom-0 inset-x-0 border-t border-white/5 px-6 md:px-16 py-4 flex justify-between items-center text-[10px] uppercase tracking-[0.3em] text-white/40 z-10">
-          <span>Scroll</span>
-          <span>FR / EN / ES</span>
-          <span className="hidden md:block">Paris — Worldwide</span>
+          <span className="animate-float">↓ {t("hero.scroll")}</span>
+          <LangSwitcher />
+          <span className="hidden md:block">{t("hero.location")}</span>
         </div>
       </section>
 
@@ -267,22 +290,21 @@ function Index() {
       </div>
 
       {/* ====== Prestations ====== */}
-      <section id="prestations" className="py-24 md:py-40 px-6 md:px-8">
+      <section id="prestations" className="py-24 md:py-40 px-6 md:px-8 relative">
         <div className="max-w-7xl mx-auto">
           <Reveal>
             <div className="flex justify-between items-end mb-16 flex-wrap gap-6">
               <div>
                 <span className="text-accent font-bold uppercase tracking-[0.3em] text-[10px] block mb-4">
-                  Vibe Check
+                  {t("prest.eyebrow")}
                 </span>
                 <h2 className="font-display text-3xl md:text-5xl uppercase">
-                  Live Fragments
+                  {t("prest.title")}
                 </h2>
               </div>
               <div className="hidden md:block h-px flex-1 bg-white/10 mx-12 mb-4" />
               <p className="text-white/50 text-sm max-w-xs">
-                Trois terrains de jeu, une même obsession : transformer un public
-                en une seule respiration.
+                {t("prest.intro")}
               </p>
             </div>
           </Reveal>
@@ -290,9 +312,7 @@ function Index() {
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             {PRESTATIONS.map((p, i) => (
               <Reveal key={p.n} delay={i * 120}>
-                <div
-                  className={`group relative overflow-hidden bg-surface ${p.offset}`}
-                >
+                <div className={`group relative overflow-hidden bg-surface hover-tilt ${p.offset}`}>
                   <div className="relative aspect-[9/16] w-full overflow-hidden">
                     <img
                       src={p.img}
@@ -303,7 +323,7 @@ function Index() {
                       className="w-full h-full object-cover grayscale group-hover:grayscale-0 transition-all duration-700 scale-105 group-hover:scale-110"
                     />
                     <div className="absolute inset-0 bg-gradient-to-t from-background via-background/30 to-transparent" />
-                    {/* Corner ticks */}
+                    <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500 bg-gradient-to-t from-accent/30 via-transparent to-transparent mix-blend-overlay" />
                     <span className="absolute top-4 left-4 size-3 border-t border-l border-accent" />
                     <span className="absolute top-4 right-4 size-3 border-t border-r border-accent opacity-60" />
                     <span className="absolute top-4 right-4 text-[10px] text-accent font-mono pr-5">{p.n}</span>
@@ -328,21 +348,22 @@ function Index() {
 
       {/* ====== Showreel ====== */}
       <section id="showreel" className="relative py-24 md:py-32 overflow-hidden">
-        <div className="px-6 md:px-16 max-w-7xl mx-auto">
+        <div className="aurora-bg" aria-hidden="true" style={{ opacity: 0.25 }} />
+        <div className="px-6 md:px-16 max-w-7xl mx-auto relative">
           <Reveal>
             <div className="mb-12 flex items-end justify-between flex-wrap gap-6">
               <div>
                 <span className="text-accent font-bold uppercase tracking-[0.3em] text-[10px] block mb-4">
-                  Showreel — 2024
+                  {t("show.eyebrow")}
                 </span>
                 <h2 className="font-display text-3xl md:text-6xl uppercase">
-                  Voir, c'est<br />
-                  <span className="text-accent italic">entendre.</span>
+                  {t("show.title1")}<br />
+                  <span className="shimmer-text italic">{t("show.title2")}</span>
                 </h2>
               </div>
               <div className="flex items-center gap-3 text-[10px] uppercase tracking-[0.3em] text-white/50">
                 <span className="size-2 rounded-full bg-accent animate-pulse-dot" />
-                Live capture
+                {t("show.live")}
               </div>
             </div>
           </Reveal>
@@ -356,29 +377,21 @@ function Index() {
                 ariaLabel="Showreel LE H 2024"
                 className="aspect-video"
                 captions={[
-                  {
-                    src: "/captions/showreel.fr.vtt",
-                    label: "Français",
-                    srcLang: "fr",
-                    default: true,
-                  },
+                  { src: "/captions/showreel.fr.vtt", label: "Français", srcLang: "fr", default: true },
                 ]}
               />
-              {/* Corner brackets */}
               <span className="pointer-events-none absolute top-4 left-4 size-6 border-t-2 border-l-2 border-accent" />
               <span className="pointer-events-none absolute top-4 right-4 size-6 border-t-2 border-r-2 border-accent" />
               <span className="pointer-events-none absolute bottom-4 left-4 size-6 border-b-2 border-l-2 border-accent" />
               <span className="pointer-events-none absolute bottom-4 right-4 size-6 border-b-2 border-r-2 border-accent" />
             </div>
-
           </Reveal>
 
-          {/* Stats strip */}
           <div className="mt-16 grid grid-cols-2 md:grid-cols-4 border-y border-white/10 divide-x divide-white/10">
             {STATS.map((s, i) => (
               <Reveal key={s.l} delay={i * 80}>
-                <div className="px-6 py-8 md:py-10">
-                  <div className="font-display text-4xl md:text-6xl text-accent glow-text">
+                <div className="px-6 py-8 md:py-10 group">
+                  <div className="font-display text-4xl md:text-6xl text-accent glow-text group-hover:animate-glow">
                     {s.v}
                   </div>
                   <div className="mt-2 text-[10px] uppercase tracking-[0.3em] text-white/50">
@@ -396,12 +409,12 @@ function Index() {
         <div className="animate-marquee-reverse flex whitespace-nowrap gap-10 items-center text-white/40">
           {Array.from({ length: 2 }).map((_, k) => (
             <div key={k} className="flex items-center gap-10 pr-10 text-[11px] uppercase tracking-[0.3em] font-bold">
-              <span>Mariages</span><span className="text-accent">/</span>
-              <span>Clubs & Festivals</span><span className="text-accent">/</span>
-              <span>Galas Corporate</span><span className="text-accent">/</span>
-              <span>Lancements Produit</span><span className="text-accent">/</span>
-              <span>Cérémonies</span><span className="text-accent">/</span>
-              <span>After-shows</span><span className="text-accent">/</span>
+              {marqueeWords.map((w, i) => (
+                <span key={i} className="flex items-center gap-10">
+                  <span>{w}</span>
+                  <span className="text-accent">/</span>
+                </span>
+              ))}
             </div>
           ))}
         </div>
@@ -412,39 +425,33 @@ function Index() {
         <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-12 gap-12 items-center">
           <Reveal className="md:col-span-7">
             <span className="text-accent font-bold uppercase tracking-[0.3em] text-[10px] block mb-6">
-              Profil — 001
+              {t("about.eyebrow")}
             </span>
             <h2 className="font-display text-4xl md:text-7xl uppercase leading-[0.95] mb-8">
-              Une voix.<br />
-              <span className="text-accent">Un public.</span><br />
-              Un moment.
+              {t("about.title1")}<br />
+              <span className="text-accent">{t("about.title2")}</span><br />
+              {t("about.title3")}
             </h2>
             <p className="text-white/65 leading-relaxed max-w-xl mb-6">
-              Depuis huit ans, LE H traverse les scènes — du club confidentiel au
-              mainstage festival, du gala de prestige au mariage le plus intime.
-              Sa marque de fabrique : lire une salle en trois secondes et la
-              guider exactement où elle veut aller.
+              {t("about.p1")}
             </p>
             <p className="text-white/65 leading-relaxed max-w-xl">
-              Trilingue, méticuleux, prêt à tout. Du run-of-show au freestyle
-              improvisé quand la musique l'exige.
+              {t("about.p2")}
             </p>
             <div className="mt-10 flex flex-wrap gap-2 text-[10px] uppercase tracking-[0.2em] font-bold">
-              {["Bilingue FR/EN", "Run-of-show", "Improvisation", "Coord. artistes", "Plateau TV"].map(
-                (t) => (
-                  <span
-                    key={t}
-                    className="border border-white/15 px-3 py-1.5 text-white/70 hover:border-accent hover:text-accent transition-colors"
-                  >
-                    {t}
-                  </span>
-                ),
-              )}
+              {[t("about.tag.1"), t("about.tag.2"), t("about.tag.3"), t("about.tag.4"), t("about.tag.5")].map((tag) => (
+                <span
+                  key={tag}
+                  className="border border-white/15 px-3 py-1.5 text-white/70 hover:border-accent hover:text-accent hover:-translate-y-0.5 transition-all duration-300"
+                >
+                  {tag}
+                </span>
+              ))}
             </div>
           </Reveal>
 
           <Reveal delay={200} className="md:col-span-5">
-            <div className="relative aspect-[4/5] overflow-hidden border border-white/10 noise">
+            <div className="relative aspect-[4/5] overflow-hidden border border-white/10 noise hover-tilt">
               <img
                 src={portraitImg}
                 alt="LE H portrait"
@@ -470,22 +477,22 @@ function Index() {
         <div className="max-w-7xl mx-auto">
           <Reveal>
             <span className="text-accent font-bold uppercase tracking-[0.3em] text-[10px] block mb-4">
-              Témoignages
+              {t("testi.eyebrow")}
             </span>
             <h2 className="font-display text-3xl md:text-5xl uppercase mb-16 max-w-2xl">
-              On dit de lui.
+              {t("testi.title")}
             </h2>
           </Reveal>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-px bg-white/10">
-            {TESTIMONIALS.map((t, i) => (
+            {TESTIMONIALS.map((tItem, i) => (
               <Reveal key={i} delay={i * 100}>
-                <div className="bg-background h-full p-8 md:p-10 flex flex-col justify-between min-h-[260px]">
-                  <p className="font-display text-3xl text-accent leading-none mb-4">"</p>
+                <div className="bg-background h-full p-8 md:p-10 flex flex-col justify-between min-h-[260px] group hover:bg-surface transition-colors">
+                  <p className="font-display text-3xl text-accent leading-none mb-4 group-hover:animate-glow">"</p>
                   <p className="text-white/75 text-base leading-relaxed flex-1">
-                    {t.q}
+                    {tItem.q}
                   </p>
                   <p className="mt-6 text-[10px] uppercase tracking-[0.25em] text-white/45 font-bold">
-                    {t.a}
+                    {tItem.a}
                   </p>
                 </div>
               </Reveal>
@@ -496,6 +503,7 @@ function Index() {
 
       {/* ====== CTA / Contact ====== */}
       <section id="contact" className="relative py-32 md:py-48 px-6 md:px-16 overflow-hidden">
+        <div className="aurora-bg" aria-hidden="true" />
         <div className="absolute inset-0 z-0 opacity-30">
           <img src={heroImg} alt="" className="w-full h-full object-cover grayscale" loading="lazy" />
           <div className="absolute inset-0 bg-gradient-to-b from-background via-background/80 to-background" />
@@ -503,39 +511,29 @@ function Index() {
         <div className="relative z-10 max-w-5xl mx-auto text-center">
           <Reveal>
             <span className="text-accent font-bold uppercase tracking-[0.3em] text-[10px] block mb-8">
-              Booking
+              {t("cta.eyebrow")}
             </span>
             <h2 className="font-display text-5xl md:text-[10rem] leading-[0.85] uppercase mb-12">
-              Ready to<br />
-              <span className="text-accent italic glow-text">amplify?</span>
+              {t("cta.title1")}<br />
+              <span className="shimmer-text italic animate-glow">{t("cta.title2")}</span>
             </h2>
             <p className="text-white/65 max-w-xl mx-auto mb-12">
-              Disponibilités limitées pour la saison 2024–2025. Parlons de votre
-              événement.
+              {t("cta.desc")}
             </p>
           </Reveal>
           <Reveal delay={150}>
             <div className="flex flex-wrap justify-center gap-4 mb-12">
               <a
-                href="mailto:lehbookingpro@gmail.com"
+                href={`mailto:${BOOKING_EMAIL}`}
                 className="group relative px-10 py-5 bg-accent text-accent-foreground font-display text-base md:text-lg uppercase tracking-tighter hover:bg-white transition-colors"
               >
-                Book Now
-              </a>
-              <a
-                href="#"
-                className="px-10 py-5 border border-white/20 text-white font-display text-base md:text-lg uppercase tracking-tighter hover:bg-white/5 transition-colors"
-              >
-                Portfolio PDF
+                <span className="absolute -inset-1 bg-accent opacity-40 blur-lg group-hover:opacity-80 transition-opacity" aria-hidden="true" />
+                <span className="relative">{t("cta.book")}</span>
               </a>
             </div>
             <div className="flex flex-wrap justify-center gap-8 text-[11px] uppercase tracking-[0.3em] text-white/60 font-bold">
-              <a href="mailto:lehbookingpro@gmail.com" className="hover:text-accent transition-colors">
-                lehbookingpro@gmail.com
-              </a>
-              <span className="text-white/20">/</span>
-              <a href="tel:+33000000000" className="hover:text-accent transition-colors">
-                +33 6 00 00 00 00
+              <a href={`mailto:${BOOKING_EMAIL}`} className="hover:text-accent transition-colors">
+                {BOOKING_EMAIL}
               </a>
             </div>
           </Reveal>
@@ -544,9 +542,9 @@ function Index() {
 
       {/* ====== Footer ====== */}
       <footer className="border-t border-white/10 px-6 md:px-16 py-10 flex flex-col md:flex-row justify-between items-center gap-6 text-[10px] uppercase tracking-[0.3em] text-white/40">
-        <p>© 2024 LE H Performance. Tous droits réservés.</p>
+        <p>{t("footer.rights")}</p>
         <div className="font-display text-2xl text-white tracking-tighter">
-          LE H<span className="text-accent">.</span>
+          LE H<span className="text-accent animate-flicker">.</span>
         </div>
         <div className="flex gap-8">
           <a href="#" className="hover:text-accent transition-colors">Instagram</a>
