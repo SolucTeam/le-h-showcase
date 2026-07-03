@@ -39,7 +39,13 @@ export const Route = createFileRoute("/")({
       { name: "twitter:description", content: "Host, MC & Crowd Catalyst. Booking 2024–2025." },
       { name: "twitter:image", content: heroImg },
     ],
-    links: [{ rel: "canonical", href: "/" }],
+    links: [
+      { rel: "canonical", href: "/" },
+      { rel: "alternate", hreflang: "x-default", href: "/" },
+      { rel: "alternate", hreflang: "fr", href: "/?lang=fr" },
+      { rel: "alternate", hreflang: "en", href: "/?lang=en" },
+      { rel: "alternate", hreflang: "es", href: "/?lang=es" },
+    ],
     scripts: [
       {
         type: "application/ld+json",
