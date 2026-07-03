@@ -214,18 +214,49 @@ const dictionaries: Record<Lang, Dict> = {
 type Ctx = { lang: Lang; setLang: (l: Lang) => void; t: (key: string) => string };
 const LangContext = createContext<Ctx | null>(null);
 
+function syncLangSideEffects(l: Lang) {
+  if (typeof document === "undefined") return;
+  document.documentElement.lang = l;
+  // Update canonical to reflect the active language variant
+  let canonical = document.querySelector<HTMLLinkElement>('link[rel="canonical"]');
+  if (!canonical) {
+    canonical = document.createElement("link");
+    canonical.rel = "canonical";
+    document.head.appendChild(canonical);
+  }
+  canonical.setAttribute("href", `/?lang=${l}`);
+}
+
 export function LangProvider({ children }: { children: ReactNode }) {
   const [lang, setLangState] = useState<Lang>("fr");
   useEffect(() => {
+    let initial: Lang | null = null;
     try {
-      const saved = localStorage.getItem("leh_lang") as Lang | null;
-      if (saved && ["fr", "en", "es"].includes(saved)) setLangState(saved);
+      const url = new URL(window.location.href);
+      const q = url.searchParams.get("lang") as Lang | null;
+      if (q && ["fr", "en", "es"].includes(q)) initial = q;
+      if (!initial) {
+        const saved = localStorage.getItem("leh_lang") as Lang | null;
+        if (saved && ["fr", "en", "es"].includes(saved)) initial = saved;
+      }
+      if (!initial) {
+        const nav = (navigator.language || "fr").slice(0, 2).toLowerCase() as Lang;
+        if (["fr", "en", "es"].includes(nav)) initial = nav;
+      }
     } catch {}
+    const resolved: Lang = initial ?? "fr";
+    setLangState(resolved);
+    syncLangSideEffects(resolved);
   }, []);
   const setLang = (l: Lang) => {
     setLangState(l);
     try { localStorage.setItem("leh_lang", l); } catch {}
-    if (typeof document !== "undefined") document.documentElement.lang = l;
+    syncLangSideEffects(l);
+    try {
+      const url = new URL(window.location.href);
+      url.searchParams.set("lang", l);
+      window.history.replaceState({}, "", url.toString());
+    } catch {}
   };
   const value = useMemo<Ctx>(() => ({
     lang,
