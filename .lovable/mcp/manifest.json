@@ -1,0 +1,130 @@
+{
+  "version": 1,
+  "sdk_version": "0.26.1",
+  "path": "/mcp",
+  "auth": {
+    "type": "none"
+  },
+  "mcp": {
+    "server": {
+      "name": "le-h-showcase",
+      "version": "0.1.0",
+      "title": "LE H Showcase"
+    },
+    "tools": [
+      {
+        "name": "get_profile",
+        "title": "Get LE H profile",
+        "description": "Public profile of LE H: role, bio, languages, key stats and booking email.",
+        "annotations": {
+          "readOnlyHint": true,
+          "idempotentHint": true,
+          "openWorldHint": false
+        },
+        "inputSchema": {
+          "$schema": "http://json-schema.org/draft-07/schema#",
+          "type": "object",
+          "properties": {
+            "lang": {
+              "description": "Language of the bio. Defaults to fr.",
+              "type": "string",
+              "enum": [
+                "fr",
+                "en",
+                "es"
+              ]
+            }
+          }
+        },
+        "outputSchema": null
+      },
+      {
+        "name": "list_services",
+        "title": "List services",
+        "description": "List the public event formats LE H hosts (festivals, corporate galas, clubs) with descriptions.",
+        "annotations": {
+          "readOnlyHint": true,
+          "idempotentHint": true,
+          "openWorldHint": false
+        },
+        "inputSchema": {
+          "$schema": "http://json-schema.org/draft-07/schema#",
+          "type": "object",
+          "properties": {
+            "lang": {
+              "description": "Language of the descriptions. Defaults to fr.",
+              "type": "string",
+              "enum": [
+                "fr",
+                "en",
+                "es"
+              ]
+            }
+          }
+        },
+        "outputSchema": null
+      },
+      {
+        "name": "list_testimonials",
+        "title": "List testimonials",
+        "description": "Public client testimonials published on the LE H portfolio.",
+        "annotations": {
+          "readOnlyHint": true,
+          "idempotentHint": true,
+          "openWorldHint": false
+        },
+        "inputSchema": {
+          "$schema": "http://json-schema.org/draft-07/schema#",
+          "type": "object",
+          "properties": {}
+        },
+        "outputSchema": null
+      },
+      {
+        "name": "draft_booking_email",
+        "title": "Draft a booking email",
+        "description": "Build a ready-to-send booking enquiry (mailto link, subject and body) addressed to LE H. Does not send anything.",
+        "annotations": {
+          "readOnlyHint": true,
+          "openWorldHint": false
+        },
+        "inputSchema": {
+          "$schema": "http://json-schema.org/draft-07/schema#",
+          "type": "object",
+          "properties": {
+            "eventName": {
+              "type": "string",
+              "description": "Name of the event."
+            },
+            "eventDate": {
+              "description": "Date or period of the event, e.g. 2026-09-12.",
+              "type": "string"
+            },
+            "city": {
+              "description": "City / venue of the event.",
+              "type": "string"
+            },
+            "audienceSize": {
+              "description": "Expected number of attendees.",
+              "type": "integer",
+              "exclusiveMinimum": 0,
+              "maximum": 9007199254740991
+            },
+            "details": {
+              "description": "Any extra context: format, timings, budget range.",
+              "type": "string"
+            },
+            "contactName": {
+              "description": "Name of the person enquiring.",
+              "type": "string"
+            }
+          },
+          "required": [
+            "eventName"
+          ]
+        },
+        "outputSchema": null
+      }
+    ]
+  }
+}
