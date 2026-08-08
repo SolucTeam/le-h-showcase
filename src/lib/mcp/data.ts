@@ -62,7 +62,7 @@ export const otherFormats = [
 export const testimonials = [
   { quote: "Une énergie qui a soulevé toute la salle. Le timing, la voix, le charisme — parfait.", author: "Sophie L. — Corporate Gala 2023" },
   { quote: "Sens du timing parfait. Il a capté 400 invités dès les premières secondes.", author: "Marc D. — LuxMedia" },
-  { quote: "L'énergie d'un festival concentrée dans une voix. On le rebooke en 2024.", author: "Kevin R. — Urban Fest" },
+  { quote: "L'énergie d'un festival concentrée dans une voix. On le rebooke en 2026.", author: "Kevin R. — Urban Fest" },
 ] as const;
 
 export function pickLang(lang: string | undefined): Lang {

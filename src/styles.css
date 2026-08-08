@@ -224,3 +224,114 @@
   transform: perspective(1000px) rotateX(2deg) rotateY(-3deg) translateY(-6px);
 }
 
+/* ===== Interactive 3D tilt (pointer-driven) ===== */
+.tilt3d {
+  transform: perspective(900px) rotateX(var(--rx, 0deg)) rotateY(var(--ry, 0deg));
+  transform-style: preserve-3d;
+  transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+  will-change: transform;
+}
+.depth-layer {
+  transform: translateZ(40px);
+}
+
+/* Fade marquee content out at the left/right edges for a premium finish. */
+.marquee-mask {
+  -webkit-mask-image: linear-gradient(
+    to right,
+    transparent,
+    #000 8%,
+    #000 92%,
+    transparent
+  );
+  mask-image: linear-gradient(to right, transparent, #000 8%, #000 92%, transparent);
+}
+
+/* Animated underline for nav links */
+.nav-link {
+  position: relative;
+}
+.nav-link::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  bottom: -5px;
+  height: 1px;
+  width: 100%;
+  background: var(--accent);
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.nav-link:hover::after {
+  transform: scaleX(1);
+}
+
+/* RGB-split glitch that flickers occasionally on display headings */
+.glitch {
+  position: relative;
+  display: inline-block;
+}
+.glitch::before,
+.glitch::after {
+  content: attr(data-text);
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 100%;
+  pointer-events: none;
+  mix-blend-mode: screen;
+}
+.glitch::before {
+  color: var(--accent);
+  animation: glitch-a 5s steps(2, jump-none) infinite;
+}
+.glitch::after {
+  color: var(--accent-2);
+  animation: glitch-b 5s steps(2, jump-none) infinite;
+}
+@keyframes glitch-a {
+  0%, 90%, 100% { transform: translate(0, 0); clip-path: inset(0 0 100% 0); opacity: 0; }
+  91% { transform: translate(-3px, -2px); clip-path: inset(0 0 58% 0); opacity: 0.85; }
+  94% { transform: translate(3px, 1px); clip-path: inset(42% 0 22% 0); opacity: 0.85; }
+  97% { transform: translate(-2px, 2px); clip-path: inset(72% 0 4% 0); opacity: 0.85; }
+}
+@keyframes glitch-b {
+  0%, 90%, 100% { transform: translate(0, 0); clip-path: inset(0 0 100% 0); opacity: 0; }
+  92% { transform: translate(3px, 2px); clip-path: inset(10% 0 60% 0); opacity: 0.7; }
+  95% { transform: translate(-3px, -1px); clip-path: inset(50% 0 30% 0); opacity: 0.7; }
+  98% { transform: translate(2px, -2px); clip-path: inset(80% 0 2% 0); opacity: 0.7; }
+}
+
+/* ===== Motion accessibility ===== */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+  .animate-marquee,
+  .animate-marquee-reverse,
+  .aurora-bg,
+  .animate-drift,
+  .animate-spin-slow,
+  .animate-glow,
+  .animate-flicker,
+  .animate-float,
+  .animate-pulse-dot,
+  .shimmer-text {
+    animation: none !important;
+  }
+  .tilt3d {
+    transform: none !important;
+  }
+  .glitch::before,
+  .glitch::after {
+    animation: none !important;
+    opacity: 0 !important;
+  }
+}
+

@@ -13,7 +13,7 @@ type Props = {
 };
 
 function fmt(t: number) {
-  if (!isFinite(t)) return "0:00";
+  if (!isFinite(t) || t < 0) return "0:00";
   const m = Math.floor(t / 60);
   const s = Math.floor(t % 60);
   return `${m}:${s.toString().padStart(2, "0")}`;
@@ -30,7 +30,9 @@ export function VideoPlayer({
 }: Props) {
   const wrapRef = useRef<HTMLDivElement>(null);
   const videoRef = useRef<HTMLVideoElement>(null);
-  const [playing, setPlaying] = useState(autoPlay);
+
+  const [playing, setPlaying] = useState(false);
+  const [started, setStarted] = useState(false);
   const [muted, setMuted] = useState(autoPlay);
   const [volume, setVolume] = useState(1);
   const [progress, setProgress] = useState(0);
@@ -38,22 +40,74 @@ export function VideoPlayer({
   const [fullscreen, setFullscreen] = useState(false);
   const [ccOn, setCcOn] = useState(false);
   const [showControls, setShowControls] = useState(true);
+  const [buffering, setBuffering] = useState(false);
+  const [error, setError] = useState(false);
 
+  // Drive UI state from the actual media element events (single source of truth),
+  // so external pauses / autoplay blocks / stalls always stay in sync.
   useEffect(() => {
     const v = videoRef.current;
     if (!v) return;
-    const onTime = () => setProgress(v.currentTime);
-    const onMeta = () => setDuration(v.duration);
-    const onEnd = () => setPlaying(false);
-    v.addEventListener("timeupdate", onTime);
-    v.addEventListener("loadedmetadata", onMeta);
-    v.addEventListener("ended", onEnd);
-    return () => {
-      v.removeEventListener("timeupdate", onTime);
-      v.removeEventListener("loadedmetadata", onMeta);
-      v.removeEventListener("ended", onEnd);
+
+    const onPlay = () => {
+      setPlaying(true);
+      setStarted(true);
+      setError(false);
     };
-  }, []);
+    const onPause = () => setPlaying(false);
+    const onTime = () => setProgress(v.currentTime);
+    const onDuration = () => {
+      setDuration(isFinite(v.duration) ? v.duration : 0);
+    };
+    const onWaiting = () => setBuffering(true);
+    const onPlaying = () => setBuffering(false);
+    const onCanPlay = () => {
+      setBuffering(false);
+      setError(false);
+    };
+    const onError = () => {
+      setBuffering(false);
+      setError(true);
+    };
+    const onVolume = () => {
+      setMuted(v.muted);
+      setVolume(v.volume);
+    };
+
+    v.addEventListener("play", onPlay);
+    v.addEventListener("pause", onPause);
+    v.addEventListener("timeupdate", onTime);
+    v.addEventListener("loadedmetadata", onDuration);
+    v.addEventListener("durationchange", onDuration);
+    v.addEventListener("waiting", onWaiting);
+    v.addEventListener("playing", onPlaying);
+    v.addEventListener("canplay", onCanPlay);
+    v.addEventListener("error", onError);
+    v.addEventListener("volumechange", onVolume);
+
+    // Sync any state the element already has (fast connections fire events early).
+    onDuration();
+    setMuted(v.muted);
+
+    return () => {
+      v.removeEventListener("play", onPlay);
+      v.removeEventListener("pause", onPause);
+      v.removeEventListener("timeupdate", onTime);
+      v.removeEventListener("loadedmetadata", onDuration);
+      v.removeEventListener("durationchange", onDuration);
+      v.removeEventListener("waiting", onWaiting);
+      v.removeEventListener("playing", onPlaying);
+      v.removeEventListener("canplay", onCanPlay);
+      v.removeEventListener("error", onError);
+      v.removeEventListener("volumechange", onVolume);
+    };
+  }, [src]);
+
+  // Reliable mute control — React's `muted` JSX prop is not applied consistently.
+  useEffect(() => {
+    const v = videoRef.current;
+    if (v) v.muted = muted;
+  }, [muted]);
 
   useEffect(() => {
     const onFs = () => setFullscreen(!!document.fullscreenElement);
@@ -70,27 +124,33 @@ export function VideoPlayer({
     }
   }, [ccOn, captions.length]);
 
+  const play = () => {
+    const v = videoRef.current;
+    if (!v) return;
+    // play() returns a promise that rejects when the browser blocks playback
+    // (e.g. autoplay policy). Fall back to muted playback instead of silently failing.
+    const p = v.play();
+    if (p && typeof p.catch === "function") {
+      p.catch(() => {
+        v.muted = true;
+        setMuted(true);
+        v.play().catch(() => setError(true));
+      });
+    }
+  };
+
   const toggle = () => {
     const v = videoRef.current;
     if (!v) return;
-    if (v.paused) {
-      v.play();
-      setPlaying(true);
-    } else {
-      v.pause();
-      setPlaying(false);
-    }
+    if (v.paused) play();
+    else v.pause();
   };
 
   const toggleMute = () => {
     const v = videoRef.current;
     if (!v) return;
     v.muted = !v.muted;
-    setMuted(v.muted);
-    if (!v.muted && v.volume === 0) {
-      v.volume = 1;
-      setVolume(1);
-    }
+    if (!v.muted && v.volume === 0) v.volume = 1;
   };
 
   const setVol = (val: number) => {
@@ -98,13 +158,11 @@ export function VideoPlayer({
     if (!v) return;
     v.volume = val;
     v.muted = val === 0;
-    setVolume(val);
-    setMuted(val === 0);
   };
 
   const seek = (val: number) => {
     const v = videoRef.current;
-    if (!v) return;
+    if (!v || !isFinite(val)) return;
     v.currentTime = val;
     setProgress(val);
   };
@@ -112,19 +170,42 @@ export function VideoPlayer({
   const toggleFs = async () => {
     const el = wrapRef.current;
     if (!el) return;
-    if (!document.fullscreenElement) {
-      await el.requestFullscreen?.();
-    } else {
-      await document.exitFullscreen?.();
+    try {
+      if (!document.fullscreenElement) await el.requestFullscreen?.();
+      else await document.exitFullscreen?.();
+    } catch {
+      /* fullscreen can be denied; ignore */
     }
+  };
+
+  const onKeyDown = (e: React.KeyboardEvent) => {
+    if (e.key === " " || e.key === "k") {
+      e.preventDefault();
+      toggle();
+    } else if (e.key === "m") {
+      toggleMute();
+    } else if (e.key === "f") {
+      toggleFs();
+    }
+  };
+
+  const retry = () => {
+    const v = videoRef.current;
+    if (!v) return;
+    setError(false);
+    v.load();
+    play();
   };
 
   return (
     <div
       ref={wrapRef}
-      className={`group relative bg-black overflow-hidden ${className}`}
+      className={`group relative bg-black overflow-hidden outline-none focus-visible:ring-2 focus-visible:ring-accent ${className}`}
       onMouseEnter={() => setShowControls(true)}
+      onMouseMove={() => setShowControls(true)}
       onMouseLeave={() => playing && setShowControls(false)}
+      onKeyDown={onKeyDown}
+      tabIndex={0}
       role="region"
       aria-label={ariaLabel}
     >
@@ -133,11 +214,9 @@ export function VideoPlayer({
         src={src}
         poster={poster}
         autoPlay={autoPlay}
-        muted={muted}
         loop={loop}
         playsInline
         preload="metadata"
-        crossOrigin="anonymous"
         onClick={toggle}
         className="w-full h-full object-cover cursor-pointer"
       >
@@ -154,15 +233,38 @@ export function VideoPlayer({
         Votre navigateur ne supporte pas la lecture vidéo HTML5.
       </video>
 
-      {/* Center play button when paused */}
-      {!playing && (
+      {/* Buffering spinner */}
+      {buffering && !error && (
+        <div className="pointer-events-none absolute inset-0 z-20 flex items-center justify-center">
+          <span className="size-12 rounded-full border-2 border-white/20 border-t-accent animate-spin" />
+        </div>
+      )}
+
+      {/* Error state with retry */}
+      {error && (
+        <div className="absolute inset-0 z-30 flex flex-col items-center justify-center gap-4 bg-black/70 text-center px-6">
+          <p className="text-white/80 text-sm max-w-xs">
+            La vidéo n'a pas pu être chargée.
+          </p>
+          <button
+            type="button"
+            onClick={retry}
+            className="px-5 py-2 border border-accent text-accent text-xs font-bold uppercase tracking-[0.2em] hover:bg-accent hover:text-accent-foreground transition-colors"
+          >
+            Réessayer
+          </button>
+        </div>
+      )}
+
+      {/* Center play button when paused (does not block the controls bar below) */}
+      {!playing && !buffering && !error && (
         <button
           type="button"
           onClick={toggle}
           aria-label="Lire la vidéo"
-          className="absolute inset-0 flex items-center justify-center bg-black/30 hover:bg-black/20 transition-colors"
+          className="absolute inset-x-0 top-0 bottom-16 z-10 flex items-center justify-center bg-black/30 hover:bg-black/20 transition-colors"
         >
-          <span className="size-20 rounded-full bg-accent/90 text-accent-foreground flex items-center justify-center shadow-2xl">
+          <span className="size-20 rounded-full bg-accent/90 text-accent-foreground flex items-center justify-center shadow-2xl transition-transform group-hover:scale-105">
             <svg width="28" height="28" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
               <path d="M8 5v14l11-7z" />
             </svg>
@@ -172,17 +274,16 @@ export function VideoPlayer({
 
       {/* Controls bar */}
       <div
-        className={`absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/90 via-black/60 to-transparent px-4 py-3 transition-opacity ${
+        className={`absolute inset-x-0 bottom-0 z-20 bg-gradient-to-t from-black/90 via-black/60 to-transparent px-4 py-3 transition-opacity ${
           showControls || !playing ? "opacity-100" : "opacity-0"
         }`}
       >
-        {/* Progress */}
         <input
           type="range"
           min={0}
           max={duration || 0}
           step={0.1}
-          value={progress}
+          value={Math.min(progress, duration || 0)}
           onChange={(e) => seek(parseFloat(e.target.value))}
           aria-label="Progression de la vidéo"
           className="w-full h-1 accent-accent cursor-pointer mb-2"
