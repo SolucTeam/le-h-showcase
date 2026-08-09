@@ -10,7 +10,7 @@ import {
 import { useEffect, type ReactNode } from "react";
 
 import appCss from "../styles.css?url";
-import heroImg from "@/assets/hero.jpg";
+import heroImg from "@/assets/hero.webp";
 import { LangProvider } from "@/lib/i18n";
 import { Hero3D } from "@/components/Hero3D";
 

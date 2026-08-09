@@ -3,17 +3,14 @@ import { useEffect, useRef } from "react";
 /**
  * Hero3D — a real WebGL scene (Three.js) rendered behind page content.
  *
- * variant "galaxy" (default): amber particle galaxy + glowing wireframe core.
- * variant "knot": a nebula shell + rotating wireframe torus-knot (used on the
- *   404 / error pages).
+ * variants: "galaxy" (hero), "wave" (showreel), "rings" (contact),
+ *           "knot" (404 / error pages).
  *
- * Fully client-only and defensive:
- *   - Three.js is loaded via dynamic import inside useEffect, so it never runs
- *     during SSR and never ships in the server bundle.
- *   - Honors prefers-reduced-motion (renders a single static frame).
- *   - Scales particle count / pixel-ratio down on small screens.
- *   - Pauses when scrolled off-screen or the tab is hidden.
- *   - Disposes every GPU resource on unmount, and never throws into the page.
+ * Lifecycle: the scene is built lazily when it scrolls near the viewport and
+ * fully torn down (GPU context freed) when it scrolls away — so at most one
+ * WebGL context is alive at a time. This keeps it smooth even on phones, where
+ * it also runs at DPR 1 with reduced geometry. Fully client-only (dynamic
+ * import), honors prefers-reduced-motion, and never throws into the page.
  */
 
 type Props = { className?: string; variant?: "galaxy" | "knot" | "wave" | "rings" };
@@ -43,17 +40,20 @@ export function Hero3D({ className = "", variant = "galaxy" }: Props) {
     if (!mount) return;
     if (typeof window === "undefined" || !window.WebGLRenderingContext) return;
 
-    let disposed = false;
-    let cleanup: (() => void) | null = null;
+    let teardown: (() => void) | null = null;
+    let buildId = 0;
 
-    (async () => {
+    const build = async () => {
+      if (teardown) return; // already built
+      const myId = ++buildId;
+
       let THREE: typeof import("three");
       try {
         THREE = await import("three");
       } catch {
         return; // three unavailable — content falls back to its gradient
       }
-      if (disposed || !mountRef.current) return;
+      if (myId !== buildId || !mountRef.current) return;
 
       const reduced = window.matchMedia?.("(prefers-reduced-motion: reduce)").matches ?? false;
       const isMobile = window.matchMedia?.("(max-width: 768px)").matches ?? false;
@@ -86,14 +86,14 @@ export function Hero3D({ className = "", variant = "galaxy" }: Props) {
         return; // WebGL unavailable
       }
       renderer.setClearColor(0x000000, 0);
-      renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, isMobile ? 1.5 : 2));
+      // DPR 1 on phones — fragment shading is the bottleneck, this ~halves it.
+      renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, isMobile ? 1 : 2));
       renderer.setSize(width, height);
       renderer.domElement.style.width = "100%";
       renderer.domElement.style.height = "100%";
       renderer.domElement.style.display = "block";
       mount.appendChild(renderer.domElement);
 
-      // Track everything for a generic cleanup.
       const disposables: { dispose: () => void }[] = [];
       const spinners: { obj: import("three").Object3D; sx: number; sy: number; sz: number }[] = [];
       const updaters: ((elapsed: number, dt: number) => void)[] = [];
@@ -102,7 +102,7 @@ export function Hero3D({ className = "", variant = "galaxy" }: Props) {
 
       const makePoints = (
         count: number,
-        place: (i: number) => [number, number, number, number], // x,y,z, mix(0..1)
+        place: (i: number) => [number, number, number, number],
         size: number,
       ) => {
         const positions = new Float32Array(count * 3);
@@ -153,9 +153,8 @@ export function Hero3D({ className = "", variant = "galaxy" }: Props) {
       };
 
       if (variant === "knot") {
-        // Nebula shell
         const nebula = makePoints(
-          isMobile ? 2600 : 5200,
+          isMobile ? 1800 : 5200,
           () => {
             const r = 2 + Math.random() * 3.2;
             const theta = Math.random() * Math.PI * 2;
@@ -172,8 +171,7 @@ export function Hero3D({ className = "", variant = "galaxy" }: Props) {
         scene.add(nebula);
         spinners.push({ obj: nebula, sx: 0.01, sy: 0.03, sz: 0 });
 
-        // Rotating wireframe torus knot
-        const knotGeo = new THREE.TorusKnotGeometry(1.25, 0.4, isMobile ? 80 : 110, isMobile ? 10 : 14);
+        const knotGeo = new THREE.TorusKnotGeometry(1.25, 0.4, isMobile ? 70 : 110, isMobile ? 8 : 14);
         const knot = makeWire(knotGeo, cA, 0.5);
         scene.add(knot);
         spinners.push({ obj: knot, sx: 0.1, sy: 0.16, sz: 0.05 });
@@ -183,10 +181,9 @@ export function Hero3D({ className = "", variant = "galaxy" }: Props) {
         scene.add(shell);
         spinners.push({ obj: shell, sx: 0.02, sy: -0.04, sz: 0.02 });
       } else if (variant === "wave") {
-        // Undulating point-grid surface
-        const GW = isMobile ? 80 : 130;
-        const GH = isMobile ? 44 : 74;
-        const gap = 0.14;
+        const GW = isMobile ? 64 : 130;
+        const GH = isMobile ? 34 : 74;
+        const gap = isMobile ? 0.2 : 0.14;
         const total = GW * GH;
         const positions = new Float32Array(total * 3);
         const colors = new Float32Array(total * 3);
@@ -194,11 +191,9 @@ export function Hero3D({ className = "", variant = "galaxy" }: Props) {
           for (let c = 0; c < GW; c++) {
             const i = r * GW + c;
             const i3 = i * 3;
-            const x = (c - GW / 2) * gap;
-            const z = (r - GH / 2) * gap;
-            positions[i3] = x;
+            positions[i3] = (c - GW / 2) * gap;
             positions[i3 + 1] = 0;
-            positions[i3 + 2] = z;
+            positions[i3 + 2] = (r - GH / 2) * gap;
             const col = cA.clone().lerp(cB, Math.min(r / GH + 0.15, 1));
             colors[i3] = col.r;
             colors[i3 + 1] = col.g;
@@ -209,7 +204,7 @@ export function Hero3D({ className = "", variant = "galaxy" }: Props) {
         geo.setAttribute("position", new THREE.BufferAttribute(positions, 3));
         geo.setAttribute("color", new THREE.BufferAttribute(colors, 3));
         const mat = new THREE.PointsMaterial({
-          size: isMobile ? 0.05 : 0.038,
+          size: isMobile ? 0.06 : 0.038,
           sizeAttenuation: true,
           depthWrite: false,
           blending: THREE.AdditiveBlending,
@@ -233,12 +228,11 @@ export function Hero3D({ className = "", variant = "galaxy" }: Props) {
           wave.rotation.z = Math.sin(t * 0.1) * 0.15;
         });
       } else if (variant === "rings") {
-        // Receding wireframe ring tunnel
-        const RINGS = isMobile ? 11 : 17;
+        const RINGS = isMobile ? 9 : 17;
         const SP = 1.15;
         const ringMeshes: import("three").Mesh[] = [];
         for (let k = 0; k < RINGS; k++) {
-          const g = new THREE.TorusGeometry(1.7, 0.012, 6, 96);
+          const g = new THREE.TorusGeometry(1.7, 0.012, 6, isMobile ? 64 : 96);
           const m = new THREE.MeshBasicMaterial({
             color: cA.clone().lerp(cB, k / RINGS),
             transparent: true,
@@ -266,8 +260,7 @@ export function Hero3D({ className = "", variant = "galaxy" }: Props) {
           }
         });
       } else {
-        // Galaxy disc
-        const COUNT = isMobile ? 3200 : 7200;
+        const COUNT = isMobile ? 2400 : 7200;
         const RADIUS = 5;
         const BRANCHES = 4;
         const SPIN = 1.1;
@@ -301,7 +294,6 @@ export function Hero3D({ className = "", variant = "galaxy" }: Props) {
         spinners.push({ obj: shell, sx: 0, sy: 0.05, sz: -0.03 });
       }
 
-      // ---- Interaction & loop ---------------------------------------------
       const pointer = { x: 0, y: 0 };
       const targetPt = { x: 0, y: 0 };
       const baseY = camera.position.y;
@@ -342,21 +334,6 @@ export function Hero3D({ className = "", variant = "galaxy" }: Props) {
         raf = requestAnimationFrame(animate);
       };
 
-      const io = new IntersectionObserver(
-        ([entry]) => {
-          if (entry.isIntersecting && !running && !reduced) {
-            running = true;
-            clock.getDelta();
-            animate();
-          } else if (!entry.isIntersecting) {
-            running = false;
-            cancelAnimationFrame(raf);
-          }
-        },
-        { threshold: 0.01 },
-      );
-      io.observe(mount);
-
       const onVisibility = () => {
         if (document.hidden) {
           running = false;
@@ -385,10 +362,9 @@ export function Hero3D({ className = "", variant = "galaxy" }: Props) {
         animate();
       }
 
-      cleanup = () => {
+      const cleanup = () => {
         running = false;
         cancelAnimationFrame(raf);
-        io.disconnect();
         window.removeEventListener("pointermove", onPointer);
         window.removeEventListener("resize", onResize);
         document.removeEventListener("visibilitychange", onVisibility);
@@ -398,11 +374,36 @@ export function Hero3D({ className = "", variant = "galaxy" }: Props) {
           mount.removeChild(renderer.domElement);
         }
       };
-    })();
+
+      // If this build was cancelled while awaiting, dispose immediately.
+      if (myId !== buildId) {
+        cleanup();
+        return;
+      }
+      teardown = cleanup;
+    };
+
+    const destroy = () => {
+      buildId++; // invalidate any in-flight build
+      if (teardown) {
+        teardown();
+        teardown = null;
+      }
+    };
+
+    // Build when near the viewport, tear down (free the GPU context) when away.
+    const io = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) build();
+        else destroy();
+      },
+      { rootMargin: "300px 0px" },
+    );
+    io.observe(mount);
 
     return () => {
-      disposed = true;
-      if (cleanup) cleanup();
+      io.disconnect();
+      destroy();
     };
   }, [variant]);
 

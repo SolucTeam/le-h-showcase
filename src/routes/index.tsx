@@ -2,15 +2,19 @@ import { createFileRoute } from "@tanstack/react-router";
 import { useEffect, useRef, useState } from "react";
 // Local bundled assets — no dependency on Lovable's remote asset proxy, so
 // images and video load identically in local dev and in any deployment.
-import heroImg from "@/assets/hero.jpg";
-import festivalImg from "@/assets/perf-festival.jpg";
-import galaImg from "@/assets/perf-gala.jpg";
-import clubImg from "@/assets/perf-club.jpg";
-import portraitImg from "@/assets/portrait.jpg";
+import heroImg from "@/assets/hero.webp";
+import heroOgImg from "@/assets/hero.jpg"; // JPEG kept for social/OG previews
+import festivalImg from "@/assets/perf-festival.webp";
+import galaImg from "@/assets/perf-gala.webp";
+import clubImg from "@/assets/perf-club.webp";
+import portraitImg from "@/assets/portrait.webp";
 import heroVideoUrl from "@/assets/hero-video.mp4";
 import reelFestivalUrl from "@/assets/reel-festival.mp4";
 import reelGalaUrl from "@/assets/reel-gala.mp4";
 import reelClubUrl from "@/assets/reel-club.mp4";
+import reelFestivalMobileUrl from "@/assets/reel-festival-m.mp4";
+import reelGalaMobileUrl from "@/assets/reel-gala-m.mp4";
+import reelClubMobileUrl from "@/assets/reel-club-m.mp4";
 import { Hero3D } from "@/components/Hero3D";
 import { LangSwitcher, useI18n } from "@/lib/i18n";
 
@@ -31,12 +35,12 @@ export const Route = createFileRoute("/")({
         property: "og:description",
         content: "Host, MC & Crowd Catalyst. Voice. Rhythm. Presence. Booking 2026–2027.",
       },
-      { property: "og:image", content: heroImg },
+      { property: "og:image", content: heroOgImg },
       { property: "og:image:alt", content: "LE H — MC sur scène avec micro, lumières lasers" },
       { property: "og:url", content: "/" },
       { name: "twitter:title", content: "LE H — Master of Ceremonies & Host" },
       { name: "twitter:description", content: "Host, MC & Crowd Catalyst. Booking 2026–2027." },
-      { name: "twitter:image", content: heroImg },
+      { name: "twitter:image", content: heroOgImg },
     ],
     links: [
       { rel: "canonical", href: "/" },
@@ -55,7 +59,7 @@ export const Route = createFileRoute("/")({
           jobTitle: "Master of Ceremonies & Host",
           description: "MC, host et animateur événementiel international.",
           email: `mailto:${BOOKING_EMAIL}`,
-          image: heroImg,
+          image: heroOgImg,
           knowsLanguage: ["fr", "en", "es"],
           areaServed: "Worldwide",
         }),
@@ -134,6 +138,21 @@ function useReducedMotion() {
     return () => m.removeEventListener?.("change", on);
   }, []);
   return reduced;
+}
+
+// True on phone-sized viewports (used to lighten the page there).
+function useIsMobile() {
+  const [mobile, setMobile] = useState(
+    () => typeof window !== "undefined" && window.matchMedia("(max-width: 768px)").matches,
+  );
+  useEffect(() => {
+    const mq = window.matchMedia("(max-width: 768px)");
+    const on = () => setMobile(mq.matches);
+    on();
+    mq.addEventListener?.("change", on);
+    return () => mq.removeEventListener?.("change", on);
+  }, []);
+  return mobile;
 }
 
 // Pointer-driven 3D tilt with real perspective. Children can lift themselves in
@@ -500,10 +519,14 @@ function ReelCard({
 
 // Coordinates the reel relay: one tile plays at a time, and each `ended` event
 // advances to the next tile, looping. Only runs while the grid is on-screen.
-function ReelGrid({ reels }: { reels: { n: string; src: string; tag: string }[] }) {
+function ReelGrid({ reels }: { reels: { n: string; src: string; srcMobile?: string; tag: string }[] }) {
   const [active, setActive] = useState(0);
   const [muted, setMuted] = useState(true);
   const [inView, setInView] = useState(false);
+  // Resolved synchronously so phones never begin fetching the heavy desktop clip.
+  const [mobile] = useState(
+    () => typeof window !== "undefined" && window.matchMedia("(max-width: 768px)").matches,
+  );
   const wrapRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -514,7 +537,6 @@ function ReelGrid({ reels }: { reels: { n: string; src: string; tag: string }[] 
     return () => io.disconnect();
   }, []);
 
-  const nextIndex = (active + 1) % reels.length;
   const advance = () => setActive((i) => (i + 1) % reels.length);
   const toggleMute = () => setMuted((m) => !m);
 
@@ -523,12 +545,12 @@ function ReelGrid({ reels }: { reels: { n: string; src: string; tag: string }[] 
       {reels.map((r, i) => (
         <Reveal key={r.n} delay={i * 120}>
           <ReelCard
-            src={r.src}
+            src={mobile && r.srcMobile ? r.srcMobile : r.src}
             tag={r.tag}
             n={r.n}
             active={i === active && inView}
             muted={muted}
-            preload={i === active || i === nextIndex ? "auto" : "metadata"}
+            preload={i === active ? "auto" : "none"}
             onEnded={advance}
             onToggleMute={toggleMute}
           />
@@ -542,6 +564,7 @@ function Index() {
   const { t } = useI18n();
   const spotRef = useSpotlight<HTMLDivElement>();
   const navDim = useNavDim();
+  const isMobile = useIsMobile();
   const heroTitleRef = useParallax<HTMLHeadingElement>(0.18);
 
   const PRESTATIONS = [
@@ -551,9 +574,9 @@ function Index() {
   ];
 
   const REELS = [
-    { n: "01", src: reelFestivalUrl, tag: "Fête de la Musique" },
-    { n: "02", src: reelGalaUrl, tag: "Amapiano" },
-    { n: "03", src: reelClubUrl, tag: "Club · Paris" },
+    { n: "01", src: reelFestivalUrl, srcMobile: reelFestivalMobileUrl, tag: "Fête de la Musique" },
+    { n: "02", src: reelGalaUrl, srcMobile: reelGalaMobileUrl, tag: "Amapiano" },
+    { n: "03", src: reelClubUrl, srcMobile: reelClubMobileUrl, tag: "Club · Paris" },
   ];
 
   const STATS = [
@@ -613,11 +636,11 @@ function Index() {
           <video
             src={heroVideoUrl}
             poster={heroImg}
-            autoPlay
+            autoPlay={!isMobile}
             muted
             loop
             playsInline
-            preload="metadata"
+            preload={isMobile ? "none" : "metadata"}
             tabIndex={-1}
             className="w-full h-full object-cover opacity-55 animate-drift"
           />

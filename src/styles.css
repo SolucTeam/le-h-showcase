@@ -303,6 +303,33 @@
   98% { transform: translate(2px, -2px); clip-path: inset(80% 0 2% 0); opacity: 0.7; }
 }
 
+/* ===== Mobile performance pass =====
+   Phones drop the heaviest paints (blur, noise, some infinite animations).
+   The WebGL scenes are skipped in JS on mobile; this covers the CSS side. */
+@media (max-width: 768px) {
+  .aurora-bg {
+    display: none;
+  }
+  .noise::after {
+    display: none;
+  }
+  .animate-drift,
+  .animate-spin-slow,
+  .animate-glow,
+  .glitch::before,
+  .glitch::after {
+    animation: none !important;
+  }
+  .glitch::before,
+  .glitch::after {
+    display: none;
+  }
+  /* Soften the perspective tilt work on touch (it's pointer-driven anyway) */
+  .tilt3d {
+    transform: none;
+  }
+}
+
 /* ===== Motion accessibility ===== */
 @media (prefers-reduced-motion: reduce) {
   *,
