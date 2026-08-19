@@ -713,7 +713,7 @@ function Index() {
         <div className="animate-marquee flex whitespace-nowrap gap-12 items-center">
           {Array.from({ length: 2 }).map((_, k) => (
             <div key={k} className="flex items-center gap-12 pr-12">
-              {["LE H", "THE VOICE", "LE H", "THE VIBE", "LE H", "THE ENERGY", "LE H", "THE HOST"].map(
+              {["LE H", "THE VOICE", "LE H", "THE VIBEGIVER", "LE H", "THE ENERGY", "LE H", "THE HOST"].map(
                 (w, i) => (
                   <span
                     key={i}
