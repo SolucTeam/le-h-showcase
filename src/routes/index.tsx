@@ -551,9 +551,9 @@ function Index() {
   const heroTitleRef = useParallax<HTMLHeadingElement>(0.18);
 
   const PRESTATIONS = [
-    { n: "01", tag: t("prest.1.tag"), title: t("prest.1.title"), desc: t("prest.1.desc"), img: festivalImg, offset: "" },
-    { n: "02", tag: t("prest.2.tag"), title: t("prest.2.title"), desc: t("prest.2.desc"), img: galaImg, offset: "md:mt-24" },
-    { n: "03", tag: t("prest.3.tag"), title: t("prest.3.title"), desc: t("prest.3.desc"), img: clubImg, offset: "" },
+    { n: "01", slug: "festivals", tag: t("prest.1.tag"), title: t("prest.1.title"), desc: t("prest.1.desc"), img: festivalImg, offset: "" },
+    { n: "02", slug: "concert-live", tag: t("prest.2.tag"), title: t("prest.2.title"), desc: t("prest.2.desc"), img: galaImg, offset: "md:mt-24" },
+    { n: "03", slug: "clubs", tag: t("prest.3.tag"), title: t("prest.3.title"), desc: t("prest.3.desc"), img: clubImg, offset: "" },
   ];
 
   const REELS = [
