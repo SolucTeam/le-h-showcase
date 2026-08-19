@@ -1,4 +1,4 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, Link } from "@tanstack/react-router";
 import { useEffect, useRef, useState } from "react";
 // Local bundled assets — no dependency on Lovable's remote asset proxy, so
 // images and video load identically in local dev and in any deployment.
