@@ -1,4 +1,4 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, Link } from "@tanstack/react-router";
 import { useEffect, useRef, useState } from "react";
 // Local bundled assets — no dependency on Lovable's remote asset proxy, so
 // images and video load identically in local dev and in any deployment.
@@ -551,9 +551,9 @@ function Index() {
   const heroTitleRef = useParallax<HTMLHeadingElement>(0.18);
 
   const PRESTATIONS = [
-    { n: "01", tag: t("prest.1.tag"), title: t("prest.1.title"), desc: t("prest.1.desc"), img: festivalImg, offset: "" },
-    { n: "02", tag: t("prest.2.tag"), title: t("prest.2.title"), desc: t("prest.2.desc"), img: galaImg, offset: "md:mt-24" },
-    { n: "03", tag: t("prest.3.tag"), title: t("prest.3.title"), desc: t("prest.3.desc"), img: clubImg, offset: "" },
+    { n: "01", slug: "festivals", tag: t("prest.1.tag"), title: t("prest.1.title"), desc: t("prest.1.desc"), img: festivalImg, offset: "" },
+    { n: "02", slug: "concert-live", tag: t("prest.2.tag"), title: t("prest.2.title"), desc: t("prest.2.desc"), img: galaImg, offset: "md:mt-24" },
+    { n: "03", slug: "clubs", tag: t("prest.3.tag"), title: t("prest.3.title"), desc: t("prest.3.desc"), img: clubImg, offset: "" },
   ];
 
   const REELS = [
@@ -664,17 +664,17 @@ function Index() {
 
         <div className="relative z-10 max-w-6xl animate-fade-up">
           <p className="text-[11px] uppercase tracking-[0.3em] text-accent font-bold mb-6">
-            {t("hero.role")}
+            HOST / SHOWMAN
           </p>
           <h1
             ref={heroTitleRef}
-            className="font-display text-[13vw] md:text-[9vw] leading-[0.9] tracking-tighter uppercase will-change-transform"
+            className="font-display text-[10vw] md:text-[7vw] leading-[0.9] tracking-tighter uppercase will-change-transform"
           >
-            <span className="glitch" data-text={t("hero.title1")}>{t("hero.title1")}</span>
+            <span className="glitch" data-text="If you don't">If you don't</span>
             <br />
-            <span className="shimmer-text italic animate-glow">{t("hero.title2")}</span>
+            <span className="shimmer-text italic animate-glow">know</span>
             <br />
-            <span className="text-white/90">{t("hero.title3")}</span>
+            <span className="text-white/90">you gonna know</span>
           </h1>
 
           <div className="mt-16 md:mt-28 flex flex-col md:flex-row md:items-end justify-between gap-8">
@@ -713,7 +713,7 @@ function Index() {
         <div className="animate-marquee flex whitespace-nowrap gap-12 items-center">
           {Array.from({ length: 2 }).map((_, k) => (
             <div key={k} className="flex items-center gap-12 pr-12">
-              {["LE H", "THE VOICE", "LE H", "THE VIBE", "LE H", "THE ENERGY", "LE H", "THE HOST"].map(
+              {["LE H", "THE VOICE", "LE H", "THE VIBEGIVER", "LE H", "THE ENERGY", "LE H", "THE HOST"].map(
                 (w, i) => (
                   <span
                     key={i}
@@ -754,7 +754,12 @@ function Index() {
             {PRESTATIONS.map((p, i) => (
               <Reveal key={p.n} delay={i * 120}>
                 <Tilt3D max={10} className={p.offset}>
-                <div className="group relative overflow-hidden bg-surface">
+                <Link
+                  to="/playgrounds/$slug"
+                  params={{ slug: p.slug }}
+                  aria-label={`${p.tag} — ${t("pg.gallery")}`}
+                  className="group relative block overflow-hidden bg-surface cursor-pointer"
+                >
                   <div className="relative aspect-[9/16] w-full overflow-hidden">
                     <img
                       src={p.img}
@@ -780,8 +785,11 @@ function Index() {
                     <p className="text-white/55 text-sm leading-relaxed max-w-[28ch]">
                       {p.desc}
                     </p>
+                    <span className="mt-5 inline-flex items-center gap-2 text-[10px] uppercase tracking-[0.3em] font-bold text-accent opacity-80 group-hover:opacity-100 group-hover:gap-4 transition-all">
+                      {t("pg.gallery")} <span aria-hidden="true">→</span>
+                    </span>
                   </div>
-                </div>
+                </Link>
                 </Tilt3D>
               </Reveal>
             ))}
