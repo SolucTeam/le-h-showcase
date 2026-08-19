@@ -754,7 +754,12 @@ function Index() {
             {PRESTATIONS.map((p, i) => (
               <Reveal key={p.n} delay={i * 120}>
                 <Tilt3D max={10} className={p.offset}>
-                <div className="group relative overflow-hidden bg-surface">
+                <Link
+                  to="/playgrounds/$slug"
+                  params={{ slug: p.slug }}
+                  aria-label={`${p.tag} — ${t("pg.gallery")}`}
+                  className="group relative block overflow-hidden bg-surface cursor-pointer"
+                >
                   <div className="relative aspect-[9/16] w-full overflow-hidden">
                     <img
                       src={p.img}
@@ -780,8 +785,11 @@ function Index() {
                     <p className="text-white/55 text-sm leading-relaxed max-w-[28ch]">
                       {p.desc}
                     </p>
+                    <span className="mt-5 inline-flex items-center gap-2 text-[10px] uppercase tracking-[0.3em] font-bold text-accent opacity-80 group-hover:opacity-100 group-hover:gap-4 transition-all">
+                      {t("pg.gallery")} <span aria-hidden="true">→</span>
+                    </span>
                   </div>
-                </div>
+                </Link>
                 </Tilt3D>
               </Reveal>
             ))}
