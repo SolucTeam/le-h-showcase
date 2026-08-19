@@ -664,17 +664,17 @@ function Index() {
 
         <div className="relative z-10 max-w-6xl animate-fade-up">
           <p className="text-[11px] uppercase tracking-[0.3em] text-accent font-bold mb-6">
-            {t("hero.role")}
+            HOST / SHOWMAN
           </p>
           <h1
             ref={heroTitleRef}
-            className="font-display text-[13vw] md:text-[9vw] leading-[0.9] tracking-tighter uppercase will-change-transform"
+            className="font-display text-[10vw] md:text-[7vw] leading-[0.9] tracking-tighter uppercase will-change-transform"
           >
-            <span className="glitch" data-text={t("hero.title1")}>{t("hero.title1")}</span>
+            <span className="glitch" data-text="If you don't">If you don't</span>
             <br />
-            <span className="shimmer-text italic animate-glow">{t("hero.title2")}</span>
+            <span className="shimmer-text italic animate-glow">know</span>
             <br />
-            <span className="text-white/90">{t("hero.title3")}</span>
+            <span className="text-white/90">you gonna know</span>
           </h1>
 
           <div className="mt-16 md:mt-28 flex flex-col md:flex-row md:items-end justify-between gap-8">
