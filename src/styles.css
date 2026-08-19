@@ -26,7 +26,7 @@
   --color-destructive-foreground: oklch(0.98 0 0);
   --color-input: var(--border);
   --color-ring: var(--accent);
-  --font-display: "Syncopate", "Inter", sans-serif;
+  --font-display: "Space Grotesk", "Inter", sans-serif;
   --font-sans: "Inter", system-ui, sans-serif;
   --radius-sm: 2px;
   --radius-md: 4px;
@@ -66,6 +66,12 @@
   ::selection {
     background: var(--accent);
     color: var(--accent-foreground);
+  }
+  /* Consistent keyboard focus state across links, buttons and controls */
+  :where(a, button, input, [tabindex]):focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 3px;
+    border-radius: 2px;
   }
 }
 
@@ -282,13 +288,14 @@
   pointer-events: none;
   mix-blend-mode: screen;
 }
+/* Intro-only glitch: flashes a few times on load, then settles (calmer / premium). */
 .glitch::before {
   color: var(--accent);
-  animation: glitch-a 5s steps(2, jump-none) infinite;
+  animation: glitch-a 2.8s steps(2, jump-none) 3;
 }
 .glitch::after {
   color: var(--accent-2);
-  animation: glitch-b 5s steps(2, jump-none) infinite;
+  animation: glitch-b 2.8s steps(2, jump-none) 3;
 }
 @keyframes glitch-a {
   0%, 90%, 100% { transform: translate(0, 0); clip-path: inset(0 0 100% 0); opacity: 0; }

@@ -8,7 +8,6 @@ import festivalImg from "@/assets/perf-festival.webp";
 import galaImg from "@/assets/perf-gala.webp";
 import clubImg from "@/assets/perf-club.webp";
 import portraitImg from "@/assets/portrait.webp";
-import heroVideoUrl from "@/assets/hero-video.mp4";
 import reelFestivalUrl from "@/assets/reel-festival.mp4";
 import reelGalaUrl from "@/assets/reel-gala.mp4";
 import reelClubUrl from "@/assets/reel-club.mp4";
@@ -138,21 +137,6 @@ function useReducedMotion() {
     return () => m.removeEventListener?.("change", on);
   }, []);
   return reduced;
-}
-
-// True on phone-sized viewports (used to lighten the page there).
-function useIsMobile() {
-  const [mobile, setMobile] = useState(
-    () => typeof window !== "undefined" && window.matchMedia("(max-width: 768px)").matches,
-  );
-  useEffect(() => {
-    const mq = window.matchMedia("(max-width: 768px)");
-    const on = () => setMobile(mq.matches);
-    on();
-    mq.addEventListener?.("change", on);
-    return () => mq.removeEventListener?.("change", on);
-  }, []);
-  return mobile;
 }
 
 // Pointer-driven 3D tilt with real perspective. Children can lift themselves in
@@ -564,7 +548,6 @@ function Index() {
   const { t } = useI18n();
   const spotRef = useSpotlight<HTMLDivElement>();
   const navDim = useNavDim();
-  const isMobile = useIsMobile();
   const heroTitleRef = useParallax<HTMLHeadingElement>(0.18);
 
   const PRESTATIONS = [
@@ -633,23 +616,17 @@ function Index() {
 
         {/* Video background */}
         <div className="absolute inset-0 z-0" aria-hidden="true">
-          <video
-            src={heroVideoUrl}
-            poster={heroImg}
-            autoPlay={!isMobile}
-            muted
-            loop
-            playsInline
-            preload={isMobile ? "none" : "metadata"}
-            tabIndex={-1}
-            className="w-full h-full object-cover opacity-55 animate-drift"
+          <img
+            src={heroImg}
+            alt=""
+            className="w-full h-full object-cover opacity-55"
           />
           <div className="absolute inset-0 bg-gradient-to-t from-background via-background/60 to-background/30" />
           <div className="absolute inset-0 bg-gradient-to-r from-background/80 via-transparent to-background/40" />
         </div>
 
         {/* 3D WebGL layer (Three.js) — glows over the video via screen blend */}
-        <Hero3D className="pointer-events-none absolute inset-0 z-[2] mix-blend-screen opacity-90" />
+        <Hero3D variant="galaxy" className="pointer-events-none absolute inset-0 z-[2] mix-blend-screen opacity-90" />
 
         {/* Cursor spotlight */}
         <div
@@ -691,18 +668,17 @@ function Index() {
           </p>
           <h1
             ref={heroTitleRef}
-            className="font-display text-[18vw] md:text-[12vw] leading-[0.85] tracking-tighter uppercase will-change-transform"
+            className="font-display text-[13vw] md:text-[9vw] leading-[0.9] tracking-tighter uppercase will-change-transform"
           >
             <span className="glitch" data-text={t("hero.title1")}>{t("hero.title1")}</span>
             <br />
             <span className="shimmer-text italic animate-glow">{t("hero.title2")}</span>
+            <br />
+            <span className="text-white/90">{t("hero.title3")}</span>
           </h1>
 
-          <div className="mt-10 flex flex-col md:flex-row md:items-end justify-between gap-8">
-            <p className="max-w-md text-white/70 text-base md:text-lg leading-relaxed">
-              {t("hero.desc")}
-            </p>
-            <div className="flex flex-wrap gap-4">
+          <div className="mt-16 md:mt-28 flex flex-col md:flex-row md:items-end justify-between gap-8">
+            <div className="flex flex-wrap gap-4 md:ml-auto md:-mr-8 lg:-mr-16">
               <Magnetic>
                 <a href="#showreel" className="group relative cursor-pointer block">
                   <div className="absolute -inset-1 bg-accent opacity-30 group-hover:opacity-70 blur-md transition-opacity animate-pulse-dot" />
@@ -725,7 +701,7 @@ function Index() {
         </div>
 
         {/* Bottom strip */}
-        <div className="absolute bottom-0 inset-x-0 border-t border-white/5 px-6 md:px-16 py-4 flex justify-between items-center text-[10px] uppercase tracking-[0.3em] text-white/40 z-10">
+        <div className="absolute bottom-0 inset-x-0 border-t border-white/5 px-6 md:px-16 py-4 flex justify-between items-center text-[10px] uppercase tracking-[0.3em] text-white/55 z-10">
           <span className="animate-float">↓ {t("hero.scroll")}</span>
           <LangSwitcher />
           <span className="hidden md:block">{t("hero.location")}</span>
@@ -768,7 +744,7 @@ function Index() {
                 </h2>
               </div>
               <div className="hidden md:block h-px flex-1 bg-white/10 mx-12 mb-4" />
-              <p className="text-white/50 text-sm max-w-xs">
+              <p className="text-white/60 text-sm max-w-xs">
                 {t("prest.intro")}
               </p>
             </div>
@@ -857,7 +833,7 @@ function Index() {
               <div className="absolute inset-0 bg-gradient-to-t from-background/70 to-transparent" />
               <div className="absolute bottom-6 left-6 right-6 flex justify-between items-end text-[10px] uppercase tracking-[0.25em] font-mono">
                 <span className="text-accent">// LE H</span>
-                <span className="text-white/50">Paris, FR</span>
+                <span className="text-white/60">Paris, FR</span>
               </div>
               <span className="absolute top-6 left-6 size-4 border-t-2 border-l-2 border-accent" />
               <span className="absolute top-6 right-6 size-4 border-t-2 border-r-2 border-accent" />
@@ -870,7 +846,7 @@ function Index() {
       {/* ====== Showreel ====== */}
       <section id="showreel" className="relative py-24 md:py-32 overflow-hidden">
         <div className="aurora-bg" aria-hidden="true" style={{ opacity: 0.25 }} />
-        <Hero3D variant="wave" className="pointer-events-none absolute inset-0 z-0 mix-blend-screen opacity-60" />
+        <Hero3D variant="wave" className="pointer-events-none absolute inset-0 z-0 mix-blend-screen opacity-30" />
         <div className="px-6 md:px-16 max-w-7xl mx-auto relative">
           <Reveal>
             <div className="mb-12 flex items-end justify-between flex-wrap gap-6">
@@ -883,7 +859,7 @@ function Index() {
                   <span className="shimmer-text italic">{t("show.title2")}</span>
                 </h2>
               </div>
-              <div className="flex items-center gap-3 text-[10px] uppercase tracking-[0.3em] text-white/50">
+              <div className="flex items-center gap-3 text-[10px] uppercase tracking-[0.3em] text-white/60">
                 <span className="size-2 rounded-full bg-accent animate-pulse-dot" />
                 {t("show.live")}
               </div>
@@ -899,7 +875,7 @@ function Index() {
                   <div className="font-display text-4xl md:text-6xl text-accent glow-text group-hover:animate-glow">
                     <CountUp value={s.v} />
                   </div>
-                  <div className="mt-2 text-[10px] uppercase tracking-[0.3em] text-white/50">
+                  <div className="mt-2 text-[10px] uppercase tracking-[0.3em] text-white/60">
                     {s.l}
                   </div>
                 </div>
@@ -911,7 +887,7 @@ function Index() {
 
       {/* ====== Reverse Marquee ====== */}
       <div className="border-y border-white/10 py-5 overflow-hidden bg-surface/40 marquee-mask">
-        <div className="animate-marquee-reverse flex whitespace-nowrap gap-10 items-center text-white/40">
+        <div className="animate-marquee-reverse flex whitespace-nowrap gap-10 items-center text-white/55">
           {Array.from({ length: 2 }).map((_, k) => (
             <div key={k} className="flex items-center gap-10 pr-10 text-[11px] uppercase tracking-[0.3em] font-bold">
               {marqueeWords.map((w, i) => (
@@ -944,7 +920,7 @@ function Index() {
                   <p className="text-white/75 text-base leading-relaxed flex-1">
                     {tItem.q}
                   </p>
-                  <p className="mt-6 text-[10px] uppercase tracking-[0.25em] text-white/45 font-bold">
+                  <p className="mt-6 text-[10px] uppercase tracking-[0.25em] text-white/60 font-bold">
                     {tItem.a}
                   </p>
                 </div>
@@ -961,7 +937,7 @@ function Index() {
           <img src={heroImg} alt="" className="w-full h-full object-cover grayscale" loading="lazy" />
           <div className="absolute inset-0 bg-gradient-to-b from-background via-background/80 to-background" />
         </div>
-        <Hero3D variant="rings" className="pointer-events-none absolute inset-0 z-[1] mix-blend-screen opacity-70" />
+        <Hero3D variant="rings" className="pointer-events-none absolute inset-0 z-[1] mix-blend-screen opacity-45" />
         <div className="relative z-10 max-w-5xl mx-auto text-center">
           <Reveal>
             <span className="text-accent font-bold uppercase tracking-[0.3em] text-[10px] block mb-8">
@@ -997,7 +973,7 @@ function Index() {
       </section>
 
       {/* ====== Footer ====== */}
-      <footer className="border-t border-white/10 px-6 md:px-16 py-10 flex flex-col md:flex-row justify-between items-center gap-6 text-[10px] uppercase tracking-[0.3em] text-white/40">
+      <footer className="border-t border-white/10 px-6 md:px-16 py-10 flex flex-col md:flex-row justify-between items-center gap-6 text-[10px] uppercase tracking-[0.3em] text-white/55">
         <p>{t("footer.rights")}</p>
         <div className="font-display text-2xl text-white tracking-tighter">
           LE H<span className="text-accent animate-flicker">.</span>

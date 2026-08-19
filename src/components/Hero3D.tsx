@@ -13,7 +13,10 @@ import { useEffect, useRef } from "react";
  * import), honors prefers-reduced-motion, and never throws into the page.
  */
 
-type Props = { className?: string; variant?: "galaxy" | "knot" | "wave" | "rings" };
+type Props = {
+  className?: string;
+  variant?: "galaxy" | "knot" | "wave" | "rings" | "japan" | "orb" | "samurai";
+};
 
 /** Resolve a CSS color (incl. oklch(...) theme tokens) to an [r,g,b] 0..1 triple. */
 function resolveColor(cssValue: string, fallback: [number, number, number]): [number, number, number] {
@@ -70,10 +73,13 @@ export function Hero3D({ className = "", variant = "galaxy" }: Props) {
       const scene = new THREE.Scene();
       const camera = new THREE.PerspectiveCamera(55, width / height, 0.1, 100);
       const camCfg: Record<string, [number, number, number]> = {
-        galaxy: [0, 1.6, 6.2],
+        galaxy: [0, 0.7, 6.2],
         knot: [0, 0.4, 6.2],
         wave: [0, 1.9, 5.0],
         rings: [0, 0, 5.5],
+        japan: [0, 0.4, 6.6],
+        orb: [0, 0, 5.0],
+        samurai: [0, 0, 6.2],
       };
       const cc = camCfg[variant] || camCfg.galaxy;
       camera.position.set(cc[0], cc[1], cc[2]);
@@ -258,6 +264,370 @@ export function Hero3D({ className = "", variant = "galaxy" }: Props) {
             else if (zz > 1.5) o = 0.65 * Math.max(0, 1 - (zz - 1.5) / 3.5);
             (mesh.material as import("three").MeshBasicMaterial).opacity = o;
           }
+        });
+      } else if (variant === "samurai") {
+        // Rising-sun disc behind the blades
+        const cnv = document.createElement("canvas");
+        cnv.width = cnv.height = 256;
+        const g2d = cnv.getContext("2d");
+        if (g2d) {
+          const grd = g2d.createRadialGradient(128, 128, 6, 128, 128, 128);
+          const r1 = (accent[0] * 255) | 0, g1 = (accent[1] * 255) | 0, b1 = (accent[2] * 255) | 0;
+          const r2 = (accent2[0] * 255) | 0, g2 = (accent2[1] * 255) | 0, b2 = (accent2[2] * 255) | 0;
+          grd.addColorStop(0, `rgba(${r1},${g1},${b1},0.9)`);
+          grd.addColorStop(0.5, `rgba(${r2},${g2},${b2},0.4)`);
+          grd.addColorStop(1, "rgba(0,0,0,0)");
+          g2d.fillStyle = grd;
+          g2d.fillRect(0, 0, 256, 256);
+        }
+        const sunTex = new THREE.CanvasTexture(cnv);
+        const sunGeo = new THREE.PlaneGeometry(5.5, 5.5);
+        const sunMat = new THREE.MeshBasicMaterial({
+          map: sunTex,
+          transparent: true,
+          depthWrite: false,
+          blending: THREE.AdditiveBlending,
+          opacity: 0.85,
+        });
+        disposables.push(sunGeo, sunMat, sunTex);
+        const sun = new THREE.Mesh(sunGeo, sunMat);
+        sun.position.set(0, 0.2, -2.2);
+        scene.add(sun);
+
+        // Build one katana (blade + tip + tsuba guard + handle), pointing up (+Y)
+        const mkEdge = (
+          geo: import("three").BufferGeometry,
+          y: number,
+          mat: import("three").LineBasicMaterial,
+          parent: import("three").Group,
+        ) => {
+          const eg = new THREE.EdgesGeometry(geo);
+          disposables.push(geo, eg);
+          const s = new THREE.LineSegments(eg, mat);
+          s.position.y = y;
+          parent.add(s);
+          return s;
+        };
+        const katana = new THREE.Group();
+        const bladeMat = new THREE.LineBasicMaterial({
+          color: cA,
+          transparent: true,
+          opacity: 0.6,
+          blending: THREE.AdditiveBlending,
+          depthWrite: false,
+        });
+        const gripMat = new THREE.LineBasicMaterial({
+          color: cB,
+          transparent: true,
+          opacity: 0.8,
+          blending: THREE.AdditiveBlending,
+          depthWrite: false,
+        });
+        disposables.push(bladeMat, gripMat);
+        mkEdge(new THREE.BoxGeometry(0.05, 2.7, 0.03), 1.5, bladeMat, katana); // blade
+        mkEdge(new THREE.ConeGeometry(0.035, 0.4, 4), 2.95, bladeMat, katana); // tip
+        const guardGeo = new THREE.TorusGeometry(0.14, 0.02, 6, 24);
+        const guardEg = new THREE.EdgesGeometry(guardGeo);
+        disposables.push(guardGeo, guardEg);
+        const guard = new THREE.LineSegments(guardEg, gripMat);
+        guard.position.y = 0.12;
+        katana.add(guard);
+        mkEdge(new THREE.BoxGeometry(0.06, 0.75, 0.04), -0.3, gripMat, katana); // handle
+
+        // Pivot at the hand so the blade swings like a real strike
+        const pivot = new THREE.Group();
+        pivot.add(katana);
+        pivot.position.set(0, -0.7, 0.3);
+        scene.add(pivot);
+
+        // Glowing slash-trail arc (flashes when the blade sweeps, then fades)
+        const trailGeo = new THREE.TorusGeometry(2.5, 0.05, 8, 64, Math.PI * 1.25);
+        const trailMat = new THREE.MeshBasicMaterial({
+          color: cA,
+          transparent: true,
+          opacity: 0,
+          blending: THREE.AdditiveBlending,
+          depthWrite: false,
+          side: THREE.DoubleSide,
+        });
+        disposables.push(trailGeo, trailMat);
+        const trail = new THREE.Mesh(trailGeo, trailMat);
+        trail.position.set(0, -0.7, 0.25);
+        trail.rotation.z = -0.55;
+        scene.add(trail);
+
+        // Iaido slash cycle: rest → fast strike → hold+fade → slow return
+        const REST = 0.95;
+        const END = -1.25;
+        const easeOut = (x: number) => 1 - Math.pow(1 - x, 3);
+        const easeInOut = (x: number) => (x < 0.5 ? 4 * x * x * x : 1 - Math.pow(-2 * x + 2, 3) / 2);
+        updaters.push((t) => {
+          const P = 4.2;
+          const l = t % P;
+          let ang = REST;
+          let trailOp = 0;
+          let glow = 0.55;
+          if (l < 0.9) {
+            ang = REST;
+          } else if (l < 1.28) {
+            const k = easeOut((l - 0.9) / 0.38);
+            ang = REST + (END - REST) * k;
+            trailOp = 1;
+            glow = 1;
+          } else if (l < 2.4) {
+            ang = END;
+            const k = (l - 1.28) / 1.12;
+            trailOp = 1 - k;
+            glow = 0.95 - 0.4 * k;
+          } else {
+            const k = easeInOut((l - 2.4) / (P - 2.4));
+            ang = END + (REST - END) * k;
+          }
+          pivot.rotation.z = ang;
+          trailMat.opacity = Math.max(0, trailOp) * 0.75;
+          bladeMat.opacity = glow;
+        });
+
+        // Concentric wireframe rings around the sun
+        for (let k = 0; k < 3; k++) {
+          const rr = 1.8 + k * 0.6;
+          const rg = new THREE.TorusGeometry(rr, 0.007, 6, isMobile ? 60 : 110);
+          const rm = new THREE.MeshBasicMaterial({
+            color: cA.clone().lerp(cB, k / 3),
+            transparent: true,
+            opacity: 0.22 - k * 0.05,
+            blending: THREE.AdditiveBlending,
+            depthWrite: false,
+          });
+          disposables.push(rg, rm);
+          const ring = new THREE.Mesh(rg, rm);
+          ring.position.set(0, 0.2, -1.9);
+          scene.add(ring);
+          spinners.push({ obj: ring, sx: 0, sy: 0, sz: 0.03 + k * 0.01 });
+        }
+
+        // Drifting embers rising
+        const embers = makePoints(
+          isMobile ? 500 : 1100,
+          () => [
+            (Math.random() - 0.5) * 8,
+            (Math.random() - 0.5) * 6 + 0.2,
+            (Math.random() - 0.5) * 3 - 0.6,
+            Math.random(),
+          ],
+          isMobile ? 0.05 : 0.035,
+        );
+        scene.add(embers);
+        const eAttr = embers.geometry.getAttribute("position") as import("three").BufferAttribute;
+        updaters.push((_t, dt) => {
+          for (let i = 0; i < eAttr.count; i++) {
+            let y = eAttr.getY(i) + dt * 0.28;
+            if (y > 3.6) y = -3.2;
+            eAttr.setY(i, y);
+          }
+          eAttr.needsUpdate = true;
+          embers.rotation.y += dt * 0.02;
+        });
+      } else if (variant === "orb") {
+        // Soft glow halo behind the orb
+        const cnv = document.createElement("canvas");
+        cnv.width = cnv.height = 256;
+        const g2d = cnv.getContext("2d");
+        if (g2d) {
+          const grd = g2d.createRadialGradient(128, 128, 6, 128, 128, 128);
+          const r1 = (accent[0] * 255) | 0, g1 = (accent[1] * 255) | 0, b1 = (accent[2] * 255) | 0;
+          const r2 = (accent2[0] * 255) | 0, g2 = (accent2[1] * 255) | 0, b2 = (accent2[2] * 255) | 0;
+          grd.addColorStop(0, `rgba(${r1},${g1},${b1},0.9)`);
+          grd.addColorStop(0.5, `rgba(${r2},${g2},${b2},0.45)`);
+          grd.addColorStop(1, "rgba(0,0,0,0)");
+          g2d.fillStyle = grd;
+          g2d.fillRect(0, 0, 256, 256);
+        }
+        const haloTex = new THREE.CanvasTexture(cnv);
+        const haloGeo = new THREE.PlaneGeometry(6.5, 6.5);
+        const haloMat = new THREE.MeshBasicMaterial({
+          map: haloTex,
+          transparent: true,
+          depthWrite: false,
+          blending: THREE.AdditiveBlending,
+          opacity: 0.55,
+        });
+        disposables.push(haloGeo, haloMat, haloTex);
+        const halo = new THREE.Mesh(haloGeo, haloMat);
+        halo.position.set(0, 0, -2.2);
+        scene.add(halo);
+
+        // Morphing orb — animated wireframe + shared points, displaced by noise each frame
+        const detail = isMobile ? 2 : 3;
+        const orbGeo = new THREE.IcosahedronGeometry(1.7, detail);
+        const orbMat = new THREE.MeshBasicMaterial({
+          color: cA,
+          wireframe: true,
+          transparent: true,
+          opacity: 0.5,
+          blending: THREE.AdditiveBlending,
+          depthWrite: false,
+        });
+        const ptsMat = new THREE.PointsMaterial({
+          color: cB,
+          size: isMobile ? 0.05 : 0.035,
+          sizeAttenuation: true,
+          transparent: true,
+          opacity: 0.9,
+          depthWrite: false,
+          blending: THREE.AdditiveBlending,
+        });
+        disposables.push(orbGeo, orbMat, ptsMat);
+        const orb = new THREE.Mesh(orbGeo, orbMat);
+        const orbPts = new THREE.Points(orbGeo, ptsMat);
+        scene.add(orb);
+        scene.add(orbPts);
+        spinners.push({ obj: orb, sx: 0.03, sy: 0.08, sz: 0 });
+        spinners.push({ obj: orbPts, sx: 0.03, sy: 0.08, sz: 0 });
+
+        const posAttr = orbGeo.getAttribute("position") as import("three").BufferAttribute;
+        const orig = new Float32Array(posAttr.array as ArrayLike<number>);
+        updaters.push((t) => {
+          const amp = 0.12 + Math.min(Math.abs(pointer.x) + Math.abs(pointer.y), 1) * 0.12;
+          for (let i = 0; i < posAttr.count; i++) {
+            const ix = i * 3;
+            const ox = orig[ix], oy = orig[ix + 1], oz = orig[ix + 2];
+            const f =
+              1 +
+              amp *
+                ((Math.sin(ox * 2 + t * 1.2) + Math.sin(oy * 2 + t * 1.5) + Math.sin(oz * 2 + t * 0.9)) / 3);
+            posAttr.setXYZ(i, ox * f, oy * f, oz * f);
+          }
+          posAttr.needsUpdate = true;
+        });
+
+        // Faint outer shell for depth
+        const shellGeo = new THREE.IcosahedronGeometry(2.7, 0);
+        const shell = makeWire(shellGeo, cB, 0.12, true);
+        scene.add(shell);
+        spinners.push({ obj: shell, sx: 0.01, sy: -0.03, sz: 0.02 });
+      } else if (variant === "japan") {
+        // Rising-sun disc (radial-gradient canvas texture)
+        const cnv = document.createElement("canvas");
+        cnv.width = cnv.height = 256;
+        const g2d = cnv.getContext("2d");
+        if (g2d) {
+          const grd = g2d.createRadialGradient(128, 128, 8, 128, 128, 128);
+          const r1 = (accent[0] * 255) | 0, g1 = (accent[1] * 255) | 0, b1 = (accent[2] * 255) | 0;
+          const r2 = (accent2[0] * 255) | 0, g2 = (accent2[1] * 255) | 0, b2 = (accent2[2] * 255) | 0;
+          grd.addColorStop(0, `rgba(${r1},${g1},${b1},0.95)`);
+          grd.addColorStop(0.45, `rgba(${r2},${g2},${b2},0.55)`);
+          grd.addColorStop(1, "rgba(0,0,0,0)");
+          g2d.fillStyle = grd;
+          g2d.fillRect(0, 0, 256, 256);
+        }
+        const sunTex = new THREE.CanvasTexture(cnv);
+        const sunGeo = new THREE.PlaneGeometry(5.4, 5.4);
+        const sunMat = new THREE.MeshBasicMaterial({
+          map: sunTex,
+          transparent: true,
+          depthWrite: false,
+          blending: THREE.AdditiveBlending,
+          opacity: 0.9,
+        });
+        disposables.push(sunGeo, sunMat, sunTex);
+        const sun = new THREE.Mesh(sunGeo, sunMat);
+        sun.position.set(0, 0.3, -1.6);
+        scene.add(sun);
+
+        // Concentric wireframe rings around the sun
+        for (let k = 0; k < 4; k++) {
+          const rr = 1.6 + k * 0.55;
+          const rg = new THREE.TorusGeometry(rr, 0.008, 6, isMobile ? 60 : 120);
+          const rm = new THREE.MeshBasicMaterial({
+            color: cA.clone().lerp(cB, k / 4),
+            transparent: true,
+            opacity: 0.35 - k * 0.05,
+            blending: THREE.AdditiveBlending,
+            depthWrite: false,
+          });
+          disposables.push(rg, rm);
+          const ring = new THREE.Mesh(rg, rm);
+          ring.position.set(0, 0.3, -1.3);
+          scene.add(ring);
+          spinners.push({ obj: ring, sx: 0, sy: 0, sz: 0.04 + k * 0.01 });
+        }
+
+        // Radial rising-sun rays
+        const RAYS = isMobile ? 20 : 32;
+        const rayPos = new Float32Array(RAYS * 2 * 3);
+        for (let k = 0; k < RAYS; k++) {
+          const a = (k / RAYS) * Math.PI * 2;
+          rayPos[k * 6 + 0] = Math.cos(a) * 2.3;
+          rayPos[k * 6 + 1] = Math.sin(a) * 2.3 + 0.3;
+          rayPos[k * 6 + 2] = -1.5;
+          rayPos[k * 6 + 3] = Math.cos(a) * 5.4;
+          rayPos[k * 6 + 4] = Math.sin(a) * 5.4 + 0.3;
+          rayPos[k * 6 + 5] = -1.5;
+        }
+        const rayGeo = new THREE.BufferGeometry();
+        rayGeo.setAttribute("position", new THREE.BufferAttribute(rayPos, 3));
+        const rayMat = new THREE.LineBasicMaterial({
+          color: cA,
+          transparent: true,
+          opacity: 0.12,
+          blending: THREE.AdditiveBlending,
+          depthWrite: false,
+        });
+        disposables.push(rayGeo, rayMat);
+        const rays = new THREE.LineSegments(rayGeo, rayMat);
+        scene.add(rays);
+        spinners.push({ obj: rays, sx: 0, sy: 0, sz: 0.02 });
+
+        // Wireframe torii gate
+        const torii = new THREE.Group();
+        const beam = (w: number, h: number, d: number, x: number, y: number) => {
+          const bg = new THREE.BoxGeometry(w, h, d);
+          const eg = new THREE.EdgesGeometry(bg);
+          const mm = new THREE.LineBasicMaterial({
+            color: cA,
+            transparent: true,
+            opacity: 0.72,
+            blending: THREE.AdditiveBlending,
+            depthWrite: false,
+          });
+          disposables.push(bg, eg, mm);
+          const seg = new THREE.LineSegments(eg, mm);
+          seg.position.set(x, y, 0);
+          torii.add(seg);
+        };
+        beam(0.16, 3, 0.16, -1.15, 0); // left pillar
+        beam(0.16, 3, 0.16, 1.15, 0); // right pillar
+        beam(3.3, 0.28, 0.28, 0, 1.55); // kasagi (top beam)
+        beam(2.7, 0.16, 0.2, 0, 0.95); // nuki (lower beam)
+        torii.position.set(0, -0.3, 0.2);
+        scene.add(torii);
+        updaters.push((t) => {
+          torii.rotation.y = Math.sin(t * 0.25) * 0.28;
+          torii.position.y = -0.3 + Math.sin(t * 0.6) * 0.05;
+        });
+
+        // Drifting embers / petals rising
+        const petals = makePoints(
+          isMobile ? 600 : 1400,
+          () => [
+            (Math.random() - 0.5) * 8,
+            (Math.random() - 0.5) * 6 + 0.3,
+            (Math.random() - 0.5) * 3 - 0.5,
+            Math.random(),
+          ],
+          isMobile ? 0.05 : 0.035,
+        );
+        scene.add(petals);
+        const pAttr = petals.geometry.getAttribute("position") as import("three").BufferAttribute;
+        updaters.push((_t, dt) => {
+          for (let i = 0; i < pAttr.count; i++) {
+            let y = pAttr.getY(i) + dt * 0.25;
+            if (y > 3.6) y = -3.2;
+            pAttr.setY(i, y);
+          }
+          pAttr.needsUpdate = true;
+          petals.rotation.y += dt * 0.02;
         });
       } else {
         const COUNT = isMobile ? 2400 : 7200;
