@@ -662,23 +662,25 @@ function Index() {
           </div>
         </div>
 
-        <div className="relative z-10 max-w-6xl animate-fade-up">
-          <p className="text-[11px] uppercase tracking-[0.3em] text-accent font-bold mb-6">
-            HOST / SHOWMAN
-          </p>
+        <div className="relative z-10 w-full max-w-6xl animate-fade-up">
+          <div className="flex items-center gap-4 mb-6">
+            <span className="h-px w-10 bg-accent" />
+            <p className="text-[11px] uppercase tracking-[0.35em] text-accent font-bold">
+              HOST / SHOWMAN
+            </p>
+          </div>
+
           <h1
             ref={heroTitleRef}
-            className="font-display text-[10vw] md:text-[7vw] leading-[0.9] tracking-tighter uppercase will-change-transform"
+            className="font-display uppercase text-[13vw] md:text-[8.5vw] lg:text-[7.5vw] leading-[0.88] tracking-[-0.03em] will-change-transform text-balance"
           >
-            <span className="glitch" data-text="If you don't">If you don't</span>
-            <br />
-            <span className="shimmer-text italic animate-glow">know</span>
-            <br />
-            <span className="text-white/90">you gonna know</span>
+            <span className="block glitch" data-text="If you don't">If you don't</span>
+            <span className="block">know you</span>
+            <span className="block shimmer-text animate-glow">gonna know</span>
           </h1>
 
-          <div className="mt-16 md:mt-28 flex flex-col md:flex-row md:items-end justify-between gap-8">
-            <div className="flex flex-wrap gap-4 md:ml-auto md:-mr-8 lg:-mr-16">
+          <div className="mt-10 md:mt-14 flex flex-col md:flex-row md:items-center gap-6 md:gap-10">
+            <div className="flex flex-wrap gap-4">
               <Magnetic>
                 <a href="#showreel" className="group relative cursor-pointer block">
                   <div className="absolute -inset-1 bg-accent opacity-30 group-hover:opacity-70 blur-md transition-opacity animate-pulse-dot" />
@@ -699,6 +701,7 @@ function Index() {
             </div>
           </div>
         </div>
+
 
         {/* Bottom strip */}
         <div className="absolute bottom-0 inset-x-0 border-t border-white/5 px-6 md:px-16 py-4 flex justify-between items-center text-[10px] uppercase tracking-[0.3em] text-white/55 z-10">
