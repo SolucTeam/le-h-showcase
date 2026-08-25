@@ -802,23 +802,55 @@ function Index() {
 
       {/* ====== About ====== */}
       <section id="about" className="py-24 md:py-40 px-6 md:px-16">
-        <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-12 gap-12 items-center">
+        <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-12 gap-12 items-start">
           <Reveal className="md:col-span-7">
             <span className="text-accent font-bold uppercase tracking-[0.3em] text-[10px] block mb-6">
               {t("about.eyebrow")}
             </span>
-            <h2 className="font-display text-4xl md:text-7xl uppercase leading-[0.95] mb-8">
-              {t("about.title1")}<br />
-              <span className="text-accent">{t("about.title2")}</span><br />
-              {t("about.title3")}
+            <h2 className="font-display text-3xl md:text-5xl lg:text-6xl uppercase leading-[0.95] mb-8">
+              {t("about.title")}
             </h2>
-            <p className="text-white/65 leading-relaxed max-w-xl mb-6">
-              {t("about.p1")}
+            <div className="space-y-5 text-white/65 leading-relaxed max-w-2xl mb-14">
+              {t("about.intro").split("\n\n").map((p, i) => (
+                <p key={i}>{p}</p>
+              ))}
+            </div>
+
+            <div className="mb-14">
+              <span className="text-accent font-bold uppercase tracking-[0.35em] text-[11px] block mb-4">
+                {t("about.vibe.title")}
+              </span>
+              <div className="space-y-5 text-white/65 leading-relaxed max-w-2xl mb-6">
+                {t("about.vibe.p1").split("\n\n").map((p, i) => (
+                  <p key={i}>{p}</p>
+                ))}
+              </div>
+              <blockquote className="relative pl-6 border-l-2 border-accent max-w-2xl">
+                <p className="font-display text-lg md:text-xl uppercase leading-tight text-white">
+                  {t("about.vibe.quote")}
+                </p>
+              </blockquote>
+            </div>
+
+            <div className="mb-14">
+              <span className="text-accent font-bold uppercase tracking-[0.35em] text-[11px] block mb-4">
+                {t("about.versatility.title")}
+              </span>
+              <div className="space-y-5 text-white/65 leading-relaxed max-w-2xl">
+                {t("about.versatility.p1").split("\n\n").map((p, i) => (
+                  <p key={i}>{p}</p>
+                ))}
+                {t("about.versatility.p2").split("\n\n").map((p, i) => (
+                  <p key={i}>{p}</p>
+                ))}
+              </div>
+            </div>
+
+            <p className="font-display text-xl md:text-2xl uppercase text-accent leading-tight mb-10 max-w-2xl">
+              {t("about.conclusion")}
             </p>
-            <p className="text-white/65 leading-relaxed max-w-xl">
-              {t("about.p2")}
-            </p>
-            <div className="mt-10 flex flex-wrap gap-2 text-[10px] uppercase tracking-[0.2em] font-bold">
+
+            <div className="flex flex-wrap gap-2 text-[10px] uppercase tracking-[0.2em] font-bold">
               {[t("about.tag.1"), t("about.tag.2"), t("about.tag.3"), t("about.tag.4"), t("about.tag.5")].map((tag) => (
                 <span
                   key={tag}
@@ -830,7 +862,7 @@ function Index() {
             </div>
           </Reveal>
 
-          <Reveal delay={200} className="md:col-span-5">
+          <Reveal delay={200} className="md:col-span-5 md:sticky md:top-32">
             <Tilt3D max={8}>
             <div className="relative aspect-[4/5] overflow-hidden border border-white/10 noise">
               <img
@@ -954,9 +986,8 @@ function Index() {
             <span className="text-accent font-bold uppercase tracking-[0.3em] text-[10px] block mb-8">
               {t("cta.eyebrow")}
             </span>
-            <h2 className="font-display text-5xl md:text-[10rem] leading-[0.85] uppercase mb-12">
-              {t("cta.title1")}<br />
-              <span className="shimmer-text italic animate-glow">{t("cta.title2")}</span>
+            <h2 className="font-display text-5xl md:text-7xl lg:text-9xl leading-[0.9] uppercase mb-12">
+              {t("cta.title")}
             </h2>
             <p className="text-white/65 max-w-xl mx-auto mb-12">
               {t("cta.desc")}
