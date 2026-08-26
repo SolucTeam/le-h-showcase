@@ -801,87 +801,94 @@ function Index() {
       </section>
 
       {/* ====== About ====== */}
-      <section id="about" className="py-24 md:py-40 px-6 md:px-16">
-        <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-12 gap-12 items-start">
-          <Reveal className="md:col-span-7">
-            <span className="text-accent font-bold uppercase tracking-[0.3em] text-[10px] block mb-6">
-              {t("about.eyebrow")}
-            </span>
-            <h2 className="font-display text-3xl md:text-5xl lg:text-6xl uppercase leading-[0.95] mb-8">
-              {t("about.title")}
-            </h2>
-            <div className="space-y-5 text-white/65 leading-relaxed max-w-2xl mb-14">
-              {t("about.intro").split("\n\n").map((p, i) => (
-                <p key={i}>{p}</p>
-              ))}
-            </div>
-
-            <div className="mb-14">
-              <span className="text-accent font-bold uppercase tracking-[0.35em] text-[11px] block mb-4">
-                {t("about.vibe.title")}
-              </span>
-              <div className="space-y-5 text-white/65 leading-relaxed max-w-2xl mb-6">
-                {t("about.vibe.p1").split("\n\n").map((p, i) => (
-                  <p key={i}>{p}</p>
-                ))}
+      <section id="about" className="py-20 md:py-28 px-6 md:px-12">
+        <div className="max-w-5xl mx-auto">
+          <Reveal>
+            <div className="grid grid-cols-1 md:grid-cols-12 gap-10 md:gap-14 items-start">
+              {/* Portrait — smaller, aligned top */}
+              <div className="md:col-span-4 order-1 md:order-1">
+                <Tilt3D max={6}>
+                  <div className="relative aspect-[3/4] overflow-hidden border border-white/10 noise">
+                    <img
+                      src={portraitImg}
+                      alt="LE H portrait"
+                      loading="lazy"
+                      width={1024}
+                      height={1536}
+                      className="w-full h-full object-cover"
+                    />
+                    <div className="absolute inset-0 bg-gradient-to-t from-background/70 to-transparent" />
+                    <div className="absolute bottom-5 left-5 right-5 flex justify-between items-end text-[10px] uppercase tracking-[0.25em] font-mono">
+                      <span className="text-accent">// LE H</span>
+                      <span className="text-white/60">Paris, FR</span>
+                    </div>
+                    <span className="absolute top-5 left-5 size-3 border-t-2 border-l-2 border-accent" />
+                    <span className="absolute top-5 right-5 size-3 border-t-2 border-r-2 border-accent" />
+                  </div>
+                </Tilt3D>
               </div>
-              <blockquote className="relative pl-6 border-l-2 border-accent max-w-2xl">
-                <p className="font-display text-lg md:text-xl uppercase leading-tight text-white">
-                  {t("about.vibe.quote")}
-                </p>
-              </blockquote>
-            </div>
 
-            <div className="mb-14">
-              <span className="text-accent font-bold uppercase tracking-[0.35em] text-[11px] block mb-4">
-                {t("about.versatility.title")}
-              </span>
-              <div className="space-y-5 text-white/65 leading-relaxed max-w-2xl">
-                {t("about.versatility.p1").split("\n\n").map((p, i) => (
-                  <p key={i}>{p}</p>
-                ))}
-                {t("about.versatility.p2").split("\n\n").map((p, i) => (
-                  <p key={i}>{p}</p>
-                ))}
-              </div>
-            </div>
-
-            <p className="font-display text-xl md:text-2xl uppercase text-accent leading-tight mb-10 max-w-2xl">
-              {t("about.conclusion")}
-            </p>
-
-            <div className="flex flex-wrap gap-2 text-[10px] uppercase tracking-[0.2em] font-bold">
-              {[t("about.tag.1"), t("about.tag.2"), t("about.tag.3"), t("about.tag.4"), t("about.tag.5")].map((tag) => (
-                <span
-                  key={tag}
-                  className="border border-white/15 px-3 py-1.5 text-white/70 hover:border-accent hover:text-accent hover:-translate-y-0.5 transition-all duration-300"
-                >
-                  {tag}
+              {/* Text — fills the remaining width */}
+              <div className="md:col-span-8 order-2 md:order-2">
+                <span className="text-accent font-bold uppercase tracking-[0.3em] text-[10px] block mb-4">
+                  {t("about.eyebrow")}
                 </span>
-              ))}
-            </div>
-          </Reveal>
+                <h2 className="font-display text-3xl md:text-4xl lg:text-5xl uppercase leading-[0.95] mb-6">
+                  {t("about.title")}
+                </h2>
 
-          <Reveal delay={200} className="md:col-span-5 md:sticky md:top-32">
-            <Tilt3D max={8}>
-            <div className="relative aspect-[4/5] overflow-hidden border border-white/10 noise">
-              <img
-                src={portraitImg}
-                alt="LE H portrait"
-                loading="lazy"
-                width={1024}
-                height={1536}
-                className="w-full h-full object-cover"
-              />
-              <div className="absolute inset-0 bg-gradient-to-t from-background/70 to-transparent" />
-              <div className="absolute bottom-6 left-6 right-6 flex justify-between items-end text-[10px] uppercase tracking-[0.25em] font-mono">
-                <span className="text-accent">// LE H</span>
-                <span className="text-white/60">Paris, FR</span>
+                <div className="space-y-4 text-white/65 leading-relaxed mb-8">
+                  {t("about.intro").split("\n\n").map((p, i) => (
+                    <p key={i}>{p}</p>
+                  ))}
+                </div>
+
+                <div className="mb-8">
+                  <span className="text-accent font-bold uppercase tracking-[0.35em] text-[11px] block mb-3">
+                    {t("about.vibe.title")}
+                  </span>
+                  <div className="space-y-4 text-white/65 leading-relaxed mb-5">
+                    {t("about.vibe.p1").split("\n\n").map((p, i) => (
+                      <p key={i}>{p}</p>
+                    ))}
+                  </div>
+                  <blockquote className="relative pl-5 border-l-2 border-accent">
+                    <p className="font-display text-base md:text-lg uppercase leading-tight text-white">
+                      {t("about.vibe.quote")}
+                    </p>
+                  </blockquote>
+                </div>
+
+                <div className="mb-8">
+                  <span className="text-accent font-bold uppercase tracking-[0.35em] text-[11px] block mb-3">
+                    {t("about.versatility.title")}
+                  </span>
+                  <div className="space-y-4 text-white/65 leading-relaxed">
+                    {t("about.versatility.p1").split("\n\n").map((p, i) => (
+                      <p key={i}>{p}</p>
+                    ))}
+                    {t("about.versatility.p2").split("\n\n").map((p, i) => (
+                      <p key={i}>{p}</p>
+                    ))}
+                  </div>
+                </div>
+
+                <p className="font-display text-lg md:text-xl uppercase text-accent leading-tight mb-6">
+                  {t("about.conclusion")}
+                </p>
+
+                <div className="flex flex-wrap gap-2 text-[10px] uppercase tracking-[0.2em] font-bold">
+                  {[t("about.tag.1"), t("about.tag.2"), t("about.tag.3"), t("about.tag.4"), t("about.tag.5")].map((tag) => (
+                    <span
+                      key={tag}
+                      className="border border-white/15 px-3 py-1.5 text-white/70 hover:border-accent hover:text-accent hover:-translate-y-0.5 transition-all duration-300"
+                    >
+                      {tag}
+                    </span>
+                  ))}
+                </div>
               </div>
-              <span className="absolute top-6 left-6 size-4 border-t-2 border-l-2 border-accent" />
-              <span className="absolute top-6 right-6 size-4 border-t-2 border-r-2 border-accent" />
             </div>
-            </Tilt3D>
           </Reveal>
         </div>
       </section>
