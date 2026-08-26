@@ -804,32 +804,9 @@ function Index() {
       <section id="about" className="py-20 md:py-28 px-6 md:px-12">
         <div className="max-w-5xl mx-auto">
           <Reveal>
-            <div className="grid grid-cols-1 md:grid-cols-12 gap-10 md:gap-14 items-start">
-              {/* Portrait — smaller, aligned top */}
-              <div className="md:col-span-4 order-1 md:order-1">
-                <Tilt3D max={6}>
-                  <div className="relative aspect-[3/4] overflow-hidden border border-white/10 noise">
-                    <img
-                      src={portraitImg}
-                      alt="LE H portrait"
-                      loading="lazy"
-                      width={1024}
-                      height={1536}
-                      className="w-full h-full object-cover"
-                    />
-                    <div className="absolute inset-0 bg-gradient-to-t from-background/70 to-transparent" />
-                    <div className="absolute bottom-5 left-5 right-5 flex justify-between items-end text-[10px] uppercase tracking-[0.25em] font-mono">
-                      <span className="text-accent">// LE H</span>
-                      <span className="text-white/60">Paris, FR</span>
-                    </div>
-                    <span className="absolute top-5 left-5 size-3 border-t-2 border-l-2 border-accent" />
-                    <span className="absolute top-5 right-5 size-3 border-t-2 border-r-2 border-accent" />
-                  </div>
-                </Tilt3D>
-              </div>
-
-              {/* Text — fills the remaining width */}
-              <div className="md:col-span-8 order-2 md:order-2">
+            <div className="grid grid-cols-1 md:grid-cols-12 gap-10 md:gap-12 items-start">
+              {/* Text — left, compact */}
+              <div className="md:col-span-8 order-2 md:order-1">
                 <span className="text-accent font-bold uppercase tracking-[0.3em] text-[10px] block mb-4">
                   {t("about.eyebrow")}
                 </span>
@@ -887,6 +864,29 @@ function Index() {
                     </span>
                   ))}
                 </div>
+              </div>
+
+              {/* Portrait — right, smaller, no sticky */}
+              <div className="md:col-span-4 order-1 md:order-2">
+                <Tilt3D max={6}>
+                  <div className="relative aspect-[3/4] overflow-hidden border border-white/10 noise">
+                    <img
+                      src={portraitImg}
+                      alt="LE H portrait"
+                      loading="lazy"
+                      width={1024}
+                      height={1536}
+                      className="w-full h-full object-cover"
+                    />
+                    <div className="absolute inset-0 bg-gradient-to-t from-background/70 to-transparent" />
+                    <div className="absolute bottom-5 left-5 right-5 flex justify-between items-end text-[10px] uppercase tracking-[0.25em] font-mono">
+                      <span className="text-accent">// LE H</span>
+                      <span className="text-white/60">Paris, FR</span>
+                    </div>
+                    <span className="absolute top-5 left-5 size-3 border-t-2 border-l-2 border-accent" />
+                    <span className="absolute top-5 right-5 size-3 border-t-2 border-r-2 border-accent" />
+                  </div>
+                </Tilt3D>
               </div>
             </div>
           </Reveal>
