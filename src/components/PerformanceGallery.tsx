@@ -40,7 +40,10 @@ export function PerformanceGallery() {
         if (!video) return null;
         return <article key={pg.slug} className="min-w-0">
           <div className="aspect-[9/16] w-full overflow-hidden rounded-md border border-border bg-surface">
-            {mobile === null ? <img src={pg.cover} alt={video.tag} loading="lazy" className="h-full w-full object-cover" /> : <video key={String(mobile)} src={mobile ? video.srcMobile : video.src} controls playsInline preload="none" poster={pg.cover} aria-label={`${category} — ${video.tag}`} className="h-full w-full object-contain" onPlay={e => { const current = e.currentTarget; ref.current?.querySelectorAll('video').forEach(v => { if (v !== current) v.pause(); }); }} />}
+            {mobile === null ? <img src={pg.cover} alt={video.tag} loading="lazy" className="h-full w-full object-cover" /> : <video key={String(mobile)} controls playsInline preload="none" poster={pg.cover} aria-label={`${category} — ${video.tag}`} className="h-full w-full object-contain" onPlay={e => { const current = e.currentTarget; ref.current?.querySelectorAll('video').forEach(v => { if (v !== current) v.pause(); }); }}>
+              <source src={mobile ? video.srcMobile : video.src} type="video/mp4" />
+              <source src={video.webm} type="video/webm" />
+            </video>}
           </div>
           <p className="mt-4 text-xs font-bold uppercase text-accent">{category}</p><h3 className="mt-2 font-display text-xl">{video.tag}</h3>
           <Button asChild variant="link" className="mt-2 h-11 px-0"><Link to="/playgrounds/$slug" params={{ slug: pg.slug }}>{c.details}<ArrowUpRight /></Link></Button>
