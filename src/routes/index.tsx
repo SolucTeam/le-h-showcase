@@ -34,12 +34,11 @@ export const Route = createFileRoute("/")({
         property: "og:description",
         content: "Host, MC & Crowd Catalyst. Voice. Rhythm. Presence. Booking 2026–2027.",
       },
-      { property: "og:image", content: heroOgImg },
-      { property: "og:image:alt", content: "LE H — MC sur scène avec micro, lumières lasers" },
+      { property: "og:type", content: "website" },
       { property: "og:url", content: "/" },
       { name: "twitter:title", content: "LE H — Master of Ceremonies & Host" },
       { name: "twitter:description", content: "Host, MC & Crowd Catalyst. Booking 2026–2027." },
-      { name: "twitter:image", content: heroOgImg },
+      { name: "twitter:card", content: "summary_large_image" },
     ],
     links: [
       { rel: "canonical", href: "/" },
@@ -804,43 +803,45 @@ function Index() {
       <section id="about" className="py-20 md:py-28 px-6 md:px-12">
         <div className="max-w-5xl mx-auto">
           <Reveal>
-            <div className="grid grid-cols-1 md:grid-cols-12 gap-10 md:gap-12 items-start">
+            <div className="grid grid-cols-1 md:grid-cols-12 gap-8 md:gap-10 items-center">
               {/* Text — left, compact */}
-              <div className="md:col-span-8 order-2 md:order-1">
-                <span className="text-accent font-bold uppercase tracking-[0.3em] text-[10px] block mb-4">
+              <div className="min-w-0 md:col-span-8 space-y-6 text-sm leading-[1.7] text-foreground/65 [overflow-wrap:anywhere]">
+                <div>
+                <span className="text-accent font-bold uppercase tracking-[0.3em] text-[10px] block mb-3">
                   {t("about.eyebrow")}
                 </span>
-                <h2 className="font-display text-3xl md:text-4xl lg:text-5xl uppercase leading-[0.95] mb-6">
+                <h2 className="font-display text-3xl lg:text-4xl uppercase leading-[1.1] tracking-normal text-foreground text-balance">
                   {t("about.title")}
                 </h2>
+                </div>
 
-                <div className="space-y-4 text-white/65 leading-relaxed mb-8">
+                <div className="space-y-4">
                   {t("about.intro").split("\n\n").map((p, i) => (
                     <p key={i}>{p}</p>
                   ))}
                 </div>
 
-                <div className="mb-8">
-                  <span className="text-accent font-bold uppercase tracking-[0.35em] text-[11px] block mb-3">
+                <div className="space-y-4">
+                  <span className="text-accent font-bold uppercase tracking-[0.35em] text-[11px] block leading-[1.7]">
                     {t("about.vibe.title")}
                   </span>
-                  <div className="space-y-4 text-white/65 leading-relaxed mb-5">
+                  <div className="space-y-4">
                     {t("about.vibe.p1").split("\n\n").map((p, i) => (
                       <p key={i}>{p}</p>
                     ))}
                   </div>
                   <blockquote className="relative pl-5 border-l-2 border-accent">
-                    <p className="font-display text-base md:text-lg uppercase leading-tight text-white">
+                    <p className="font-display text-sm uppercase leading-[1.7] tracking-normal text-foreground">
                       {t("about.vibe.quote")}
                     </p>
                   </blockquote>
                 </div>
 
-                <div className="mb-8">
-                  <span className="text-accent font-bold uppercase tracking-[0.35em] text-[11px] block mb-3">
+                <div className="space-y-4">
+                  <span className="text-accent font-bold uppercase tracking-[0.35em] text-[11px] block leading-[1.7]">
                     {t("about.versatility.title")}
                   </span>
-                  <div className="space-y-4 text-white/65 leading-relaxed">
+                  <div className="space-y-4">
                     {t("about.versatility.p1").split("\n\n").map((p, i) => (
                       <p key={i}>{p}</p>
                     ))}
@@ -850,15 +851,15 @@ function Index() {
                   </div>
                 </div>
 
-                <p className="font-display text-lg md:text-xl uppercase text-accent leading-tight mb-6">
+                <p className="font-display text-sm uppercase text-accent leading-[1.7] tracking-normal">
                   {t("about.conclusion")}
                 </p>
 
-                <div className="flex flex-wrap gap-2 text-[10px] uppercase tracking-[0.2em] font-bold">
+                <div className="flex flex-wrap gap-2 text-[10px] uppercase tracking-[0.2em] font-bold leading-[1.7]">
                   {[t("about.tag.1"), t("about.tag.2"), t("about.tag.3"), t("about.tag.4"), t("about.tag.5")].map((tag) => (
                     <span
                       key={tag}
-                      className="border border-white/15 px-3 py-1.5 text-white/70 hover:border-accent hover:text-accent hover:-translate-y-0.5 transition-all duration-300"
+                      className="max-w-full border border-foreground/15 px-3 py-1.5 text-foreground/70 hover:border-accent hover:text-accent hover:-translate-y-0.5 transition-all duration-300"
                     >
                       {tag}
                     </span>
@@ -867,9 +868,9 @@ function Index() {
               </div>
 
               {/* Portrait — right, smaller, no sticky */}
-              <div className="md:col-span-4 order-1 md:order-2">
+              <div className="min-w-0 w-full max-w-xs mx-auto md:max-w-none md:col-span-4">
                 <Tilt3D max={6}>
-                  <div className="relative aspect-[3/4] overflow-hidden border border-white/10 noise">
+                  <div className="relative aspect-[3/4] overflow-hidden border border-foreground/10 noise">
                     <img
                       src={portraitImg}
                       alt="LE H portrait"
@@ -881,7 +882,7 @@ function Index() {
                     <div className="absolute inset-0 bg-gradient-to-t from-background/70 to-transparent" />
                     <div className="absolute bottom-5 left-5 right-5 flex justify-between items-end text-[10px] uppercase tracking-[0.25em] font-mono">
                       <span className="text-accent">// LE H</span>
-                      <span className="text-white/60">Paris, FR</span>
+                      <span className="text-foreground/60">Paris, FR</span>
                     </div>
                     <span className="absolute top-5 left-5 size-3 border-t-2 border-l-2 border-accent" />
                     <span className="absolute top-5 right-5 size-3 border-t-2 border-r-2 border-accent" />
