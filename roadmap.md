@@ -1,3 +1,3 @@
 # Tasks
-- [ ] Harmonize profile typography and vertically center the portrait beside the text.
-- [ ] Verify desktop, tablet and mobile layouts in all three languages.
+- [x] Harmonize profile typography and vertically center the portrait beside the text.
+- [x] Verify desktop, tablet and mobile layouts in all three languages (320, 390, 768, 1086 and 1440 px); no profile overflow.
