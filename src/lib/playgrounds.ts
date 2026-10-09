@@ -9,9 +9,6 @@ import reelClubUrl from "@/assets/reel-club.mp4";
 import reelFestivalMobileUrl from "@/assets/reel-festival-m.mp4";
 import reelGalaMobileUrl from "@/assets/reel-gala-m.mp4";
 import reelClubMobileUrl from "@/assets/reel-club-m.mp4";
-import festivalWebm from "@/assets/reel-festival.webm";
-import concertWebm from "@/assets/reel-gala.webm";
-import clubWebm from "@/assets/reel-club.webm";
 
 export type Playground = {
   slug: string;
@@ -23,7 +20,7 @@ export type Playground = {
   descKey: string;
   bodyKey: string;
   gallery: { src: string; alt: string }[];
-  videos: { src: string; srcMobile: string; webm: string; tag: string }[];
+  videos: { src: string; srcMobile: string; tag: string }[];
 };
 
 export const PLAYGROUNDS: Playground[] = [
@@ -40,7 +37,7 @@ export const PLAYGROUNDS: Playground[] = [
       { src: heroImg, alt: "LE H — micro en main sur scène" },
       { src: portraitImg, alt: "LE H — portrait backstage" },
     ],
-    videos: [{ src: reelFestivalUrl, srcMobile: reelFestivalMobileUrl, webm: festivalWebm, tag: "Fête de la Musique" }],
+    videos: [{ src: reelFestivalUrl, srcMobile: reelFestivalMobileUrl, tag: "Fête de la Musique" }],
   },
   {
     slug: "concert-live",
@@ -55,7 +52,7 @@ export const PLAYGROUNDS: Playground[] = [
       { src: heroImg, alt: "LE H — scène et lumières" },
       { src: festivalImg, alt: "LE H — public en feu" },
     ],
-    videos: [{ src: reelGalaUrl, srcMobile: reelGalaMobileUrl, webm: concertWebm, tag: "Amapiano" }],
+    videos: [{ src: reelGalaUrl, srcMobile: reelGalaMobileUrl, tag: "Amapiano" }],
   },
   {
     slug: "clubs",
@@ -70,7 +67,7 @@ export const PLAYGROUNDS: Playground[] = [
       { src: portraitImg, alt: "LE H — portrait" },
       { src: heroImg, alt: "LE H — dancefloor" },
     ],
-    videos: [{ src: reelClubUrl, srcMobile: reelClubMobileUrl, webm: clubWebm, tag: "Club · Paris" }],
+    videos: [{ src: reelClubUrl, srcMobile: reelClubMobileUrl, tag: "Club · Paris" }],
   },
 ];
 
