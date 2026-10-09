@@ -40,7 +40,8 @@ export const Route = createFileRoute("/playgrounds/$slug")({
 function PlaygroundPage() {
   const { slug } = Route.useLoaderData();
   const { t } = useI18n();
-  const pg = getPlayground(slug)!;
+  const pg = getPlayground(slug);
+  if (!pg) throw notFound();
   const others = PLAYGROUNDS.filter((p) => p.slug !== pg.slug);
 
   return (
