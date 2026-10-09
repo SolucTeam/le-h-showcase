@@ -8,12 +8,8 @@ import festivalImg from "@/assets/perf-festival.webp";
 import galaImg from "@/assets/perf-gala.webp";
 import clubImg from "@/assets/perf-club.webp";
 import portraitImg from "@/assets/portrait.webp";
-import reelFestivalUrl from "@/assets/reel-festival.mp4";
-import reelGalaUrl from "@/assets/reel-gala.mp4";
-import reelClubUrl from "@/assets/reel-club.mp4";
-import reelFestivalMobileUrl from "@/assets/reel-festival-m.mp4";
-import reelGalaMobileUrl from "@/assets/reel-gala-m.mp4";
-import reelClubMobileUrl from "@/assets/reel-club-m.mp4";
+import { EventRecommendation } from "@/components/EventRecommendation";
+import { PerformanceGallery } from "@/components/PerformanceGallery";
 import { Hero3D } from "@/components/Hero3D";
 import { LangSwitcher, useI18n } from "@/lib/i18n";
 
@@ -373,176 +369,6 @@ function Magnetic({
   );
 }
 
-// One vertical reel tile. Playback is driven by the parent ReelGrid: only the
-// "active" tile plays; when its video ends the parent hands off to the next tile.
-// Tap the video (or the speaker) to toggle sound for the whole relay.
-function ReelCard({
-  src,
-  tag,
-  n,
-  active,
-  muted,
-  preload,
-  onEnded,
-  onToggleMute,
-}: {
-  src: string;
-  tag: string;
-  n: string;
-  active: boolean;
-  muted: boolean;
-  preload: "auto" | "metadata" | "none";
-  onEnded: () => void;
-  onToggleMute: () => void;
-}) {
-  const videoRef = useRef<HTMLVideoElement>(null);
-  const [progress, setProgress] = useState(0);
-
-  // Play / restart when this tile becomes active; pause + rewind otherwise.
-  useEffect(() => {
-    const v = videoRef.current;
-    if (!v) return;
-    if (active) {
-      try {
-        v.currentTime = 0;
-      } catch {
-        /* ignore */
-      }
-      v.play().catch(() => {});
-    } else {
-      v.pause();
-      try {
-        v.currentTime = 0;
-      } catch {
-        /* ignore */
-      }
-      setProgress(0);
-    }
-  }, [active]);
-
-  useEffect(() => {
-    const v = videoRef.current;
-    if (v) v.muted = muted;
-  }, [muted]);
-
-  useEffect(() => {
-    const v = videoRef.current;
-    if (!v) return;
-    const onTime = () => setProgress(v.duration ? v.currentTime / v.duration : 0);
-    const onEnd = () => onEnded();
-    v.addEventListener("timeupdate", onTime);
-    v.addEventListener("ended", onEnd);
-    return () => {
-      v.removeEventListener("timeupdate", onTime);
-      v.removeEventListener("ended", onEnd);
-    };
-  }, [onEnded]);
-
-  return (
-    <Tilt3D max={10}>
-      <div
-        className={`group relative overflow-hidden bg-surface border transition-all duration-500 ${
-          active ? "border-accent glow-accent" : "border-white/10"
-        }`}
-      >
-        <div className="relative aspect-[9/16] w-full overflow-hidden">
-          <video
-            ref={videoRef}
-            src={src}
-            playsInline
-            preload={preload}
-            onClick={onToggleMute}
-            className={`w-full h-full object-cover cursor-pointer scale-105 transition-all duration-700 ${
-              active ? "grayscale-0" : "grayscale opacity-60 group-hover:opacity-90"
-            }`}
-          />
-          <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-background via-background/25 to-transparent" />
-          <div className="pointer-events-none absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500 bg-gradient-to-t from-accent/25 via-transparent to-transparent mix-blend-overlay" />
-          <span className="pointer-events-none absolute top-4 left-4 size-3 border-t border-l border-accent" />
-          <span className="pointer-events-none absolute top-4 right-4 size-3 border-t border-r border-accent opacity-60" />
-          <span className="pointer-events-none absolute top-4 right-4 text-[10px] text-accent font-mono pr-5">{n}</span>
-
-          {/* Now-playing / paused pill */}
-          <span className="pointer-events-none absolute top-4 left-9 flex items-center gap-1.5 text-[9px] uppercase tracking-[0.25em] text-white/70">
-            <span className={`size-1.5 rounded-full bg-accent ${active ? "animate-pulse-dot" : "opacity-40"}`} />
-            {active ? "On Air" : "Reel"}
-          </span>
-
-          {/* Mute / unmute */}
-          <button
-            type="button"
-            onClick={(e) => {
-              e.stopPropagation();
-              onToggleMute();
-            }}
-            aria-label={muted ? "Activer le son" : "Couper le son"}
-            className="absolute bottom-5 right-4 z-10 size-10 rounded-full bg-black/50 backdrop-blur border border-white/20 text-white flex items-center justify-center hover:bg-accent hover:text-accent-foreground hover:border-accent transition-colors"
-          >
-            {muted ? (
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M16.5 12A4.5 4.5 0 0014 8.05v2.13l2.45 2.45c.03-.21.05-.42.05-.63zM4.27 3L3 4.27 7.73 9H3v6h4l5 5v-6.73l4.25 4.25c-.67.52-1.42.93-2.25 1.17v2.06a8.99 8.99 0 003.69-1.81L19.73 21 21 19.73 4.27 3zM12 4L9.91 6.09 12 8.18V4z"/></svg>
-            ) : (
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3A4.5 4.5 0 0014 8.05v7.9A4.5 4.5 0 0016.5 12zM14 3.23v2.06c2.89.86 5 3.54 5 6.71s-2.11 5.85-5 6.71v2.06c4.01-.91 7-4.49 7-8.77s-2.99-7.86-7-8.77z"/></svg>
-            )}
-          </button>
-
-          {/* Playback progress (active tile only) */}
-          <div className="pointer-events-none absolute bottom-0 inset-x-0 h-1 bg-white/10">
-            <div className="h-full bg-accent transition-[width] duration-150" style={{ width: `${(active ? progress : 0) * 100}%` }} />
-          </div>
-        </div>
-
-        <div className="pointer-events-none absolute inset-x-0 bottom-0 p-6 pb-4 depth-layer">
-          <span className="text-accent text-[10px] font-bold uppercase tracking-[0.3em] mb-2 block">{tag}</span>
-          <h3 className="font-display text-xl md:text-2xl uppercase leading-none">Live Cut</h3>
-        </div>
-      </div>
-    </Tilt3D>
-  );
-}
-
-// Coordinates the reel relay: one tile plays at a time, and each `ended` event
-// advances to the next tile, looping. Only runs while the grid is on-screen.
-function ReelGrid({ reels }: { reels: { n: string; src: string; srcMobile?: string; tag: string }[] }) {
-  const [active, setActive] = useState(0);
-  const [muted, setMuted] = useState(true);
-  const [inView, setInView] = useState(false);
-  // Resolved synchronously so phones never begin fetching the heavy desktop clip.
-  const [mobile] = useState(
-    () => typeof window !== "undefined" && window.matchMedia("(max-width: 768px)").matches,
-  );
-  const wrapRef = useRef<HTMLDivElement>(null);
-
-  useEffect(() => {
-    const el = wrapRef.current;
-    if (!el) return;
-    const io = new IntersectionObserver(([e]) => setInView(e.isIntersecting), { threshold: 0.25 });
-    io.observe(el);
-    return () => io.disconnect();
-  }, []);
-
-  const advance = () => setActive((i) => (i + 1) % reels.length);
-  const toggleMute = () => setMuted((m) => !m);
-
-  return (
-    <div ref={wrapRef} className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
-      {reels.map((r, i) => (
-        <Reveal key={r.n} delay={i * 120}>
-          <ReelCard
-            src={mobile && r.srcMobile ? r.srcMobile : r.src}
-            tag={r.tag}
-            n={r.n}
-            active={i === active && inView}
-            muted={muted}
-            preload={i === active ? "auto" : "none"}
-            onEnded={advance}
-            onToggleMute={toggleMute}
-          />
-        </Reveal>
-      ))}
-    </div>
-  );
-}
-
 function Index() {
   const { t } = useI18n();
   const spotRef = useSpotlight<HTMLDivElement>();
@@ -553,12 +379,6 @@ function Index() {
     { n: "01", slug: "festivals", tag: t("prest.1.tag"), title: t("prest.1.title"), desc: t("prest.1.desc"), img: festivalImg, offset: "" },
     { n: "02", slug: "concert-live", tag: t("prest.2.tag"), title: t("prest.2.title"), desc: t("prest.2.desc"), img: galaImg, offset: "md:mt-24" },
     { n: "03", slug: "clubs", tag: t("prest.3.tag"), title: t("prest.3.title"), desc: t("prest.3.desc"), img: clubImg, offset: "" },
-  ];
-
-  const REELS = [
-    { n: "01", src: reelFestivalUrl, srcMobile: reelFestivalMobileUrl, tag: "Fête de la Musique" },
-    { n: "02", src: reelGalaUrl, srcMobile: reelGalaMobileUrl, tag: "Amapiano" },
-    { n: "03", src: reelClubUrl, srcMobile: reelClubMobileUrl, tag: "Club · Paris" },
   ];
 
   const STATS = [
@@ -800,17 +620,17 @@ function Index() {
       </section>
 
       {/* ====== About ====== */}
-      <section id="about" className="py-20 md:py-28 px-6 md:px-12">
+      <section id="about" className="py-16 md:py-28 px-5 md:px-12">
         <div className="max-w-5xl mx-auto">
           <Reveal>
             <div className="grid grid-cols-1 md:grid-cols-12 gap-8 md:gap-10 items-center">
               {/* Text — left, compact */}
-              <div className="min-w-0 md:col-span-8 space-y-6 text-sm leading-[1.7] text-foreground/65 [overflow-wrap:anywhere]">
+              <div className="min-w-0 md:col-span-8 space-y-6 text-base md:text-sm leading-[1.75] md:leading-[1.7] text-foreground/80 [overflow-wrap:anywhere]">
                 <div>
                 <span className="text-accent font-bold uppercase tracking-[0.3em] text-[10px] block mb-3">
                   {t("about.eyebrow")}
                 </span>
-                <h2 className="font-display text-3xl lg:text-4xl uppercase leading-[1.1] tracking-normal text-foreground text-balance">
+                <h2 className="font-display text-2xl sm:text-3xl lg:text-4xl uppercase leading-[1.2] tracking-normal text-foreground text-balance">
                   {t("about.title")}
                 </h2>
                 </div>
@@ -868,7 +688,7 @@ function Index() {
               </div>
 
               {/* Portrait — right, smaller, no sticky */}
-              <div className="min-w-0 w-full max-w-xs mx-auto md:max-w-none md:col-span-4">
+              <div className="min-w-0 w-full max-w-[272px] sm:max-w-xs mx-auto md:max-w-none md:col-span-4">
                 <Tilt3D max={6}>
                   <div className="relative aspect-[3/4] overflow-hidden border border-foreground/10 noise">
                     <img
@@ -877,7 +697,7 @@ function Index() {
                       loading="lazy"
                       width={1024}
                       height={1536}
-                      className="w-full h-full object-cover"
+                      className="w-full h-full object-cover object-top"
                     />
                     <div className="absolute inset-0 bg-gradient-to-t from-background/70 to-transparent" />
                     <div className="absolute bottom-5 left-5 right-5 flex justify-between items-end text-[10px] uppercase tracking-[0.25em] font-mono">
@@ -917,7 +737,7 @@ function Index() {
             </div>
           </Reveal>
 
-          <ReelGrid reels={REELS} />
+          <PerformanceGallery />
 
           <div className="mt-16 grid grid-cols-2 md:grid-cols-4 border-y border-white/10 divide-x divide-white/10">
             {STATS.map((s, i) => (
@@ -980,6 +800,8 @@ function Index() {
           </div>
         </div>
       </section>
+
+      <EventRecommendation />
 
       {/* ====== CTA / Contact ====== */}
       <section id="contact" className="relative py-32 md:py-48 px-6 md:px-16 overflow-hidden">
