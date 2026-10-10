@@ -268,7 +268,7 @@ function syncLangSideEffects(l: Lang) {
 
 export function LangProvider({ children }: { children: ReactNode }) {
   const search = useSearch({ strict: false });
-  const navigate = useNavigate();
+  const navigate = useNavigate({ from: "__root__" });
   const lang = resolveLanguage(search.lang);
   useEffect(() => {
     let initial: Lang | null = null;

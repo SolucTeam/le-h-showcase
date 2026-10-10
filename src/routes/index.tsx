@@ -531,7 +531,7 @@ function Index() {
   const { t, lang } = useI18n();
   const spotRef = useSpotlight<HTMLDivElement>();
   const navDim = useNavDim();
-  const heroTitleRef = useParallax<HTMLHeadingElement>(0.18);
+  const heroTitleRef = useParallax<HTMLDivElement>(0.18);
 
   const PRESTATIONS = [
     { n: "01", slug: "festivals", tag: t("prest.1.tag"), title: t("prest.1.title"), desc: t("prest.1.desc"), img: festivalImg, offset: "" },
