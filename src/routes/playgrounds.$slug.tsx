@@ -6,6 +6,7 @@ import { getPageCopy, localizedHead, resolveLanguage } from "@/lib/seo";
 const BOOKING_EMAIL = "lehbookingpro@gmail.com";
 
 export const Route = createFileRoute("/playgrounds/$slug")({
+  staticData: { sitemap: true },
   loaderDeps: ({ search }) => ({ lang: resolveLanguage(search.lang) }),
   loader: ({ params, deps }) => {
     const pg = getPlayground(params.slug);

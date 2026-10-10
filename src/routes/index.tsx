@@ -26,6 +26,7 @@ import contractIdfAsset from "@/assets/booking-contract-idf.pdf.asset.json";
 const BOOKING_EMAIL = "lehbookingpro@gmail.com";
 
 export const Route = createFileRoute("/")({
+  staticData: { sitemap: true },
   loaderDeps: ({ search }) => ({ lang: resolveLanguage(search.lang) }),
   loader: ({ deps }) => deps,
   head: ({ loaderData }) => ({

@@ -127,6 +127,7 @@ function ErrorComponent({ error, reset }: ErrorComponentProps) {
 }
 
 export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()({
+  staticData: { sitemap: false },
   validateSearch: (search: Record<string, unknown>): { lang?: string } => ({
     lang: typeof search.lang === "string" ? search.lang : undefined,
   }),
