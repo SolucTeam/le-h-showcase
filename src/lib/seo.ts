@@ -6,24 +6,24 @@ export function resolveLanguage(value: unknown): SiteLanguage {
 type PageCopy = { title: string; description: string; h1: string };
 const pages: Record<string, Record<SiteLanguage, PageCopy>> = {
   home: {
-    fr: { title: "LE H — MC, Host & Showman | Festivals et Concerts", description: "Découvrez LE H, MC et showman basé à Paris : festivals, concerts, clubs et événements de marque. Animation FR/EN/ES et booking international.", h1: "LE H — MC, Host & Showman" },
-    en: { title: "LE H | Festival & Concert MC, Event Host in Paris", description: "Book LE H, Paris-based MC, hypeman and live show host for festivals, concerts and clubs worldwide. Crowd energy in English, French and Spanish.", h1: "LE H — MC, Event Host & Live Showman" },
-    es: { title: "LE H | MC y Presentador de Festivales y Conciertos", description: "Contrata a LE H, MC y presentador de espectáculos en París, para festivales, conciertos y clubs. Animación en español, francés e inglés en todo el mundo.", h1: "LE H — MC y Presentador de Espectáculos en Vivo" },
+    fr: { title: "LE H — MC, Host & Showman à Paris | Festivals, Concerts & Clubs", description: "LE H, MC et showman basé à Paris et en Île-de-France : festivals, concerts, clubs et événements de marque. Animation FR/EN/ES, booking en France et à l'international.", h1: "LE H — MC, Host & Showman à Paris" },
+    en: { title: "LE H | Festival, Concert & Club MC in Paris, France", description: "Book LE H, MC and live show host based in Paris and Île-de-France, for festivals, concerts and clubs across France and worldwide. Crowd energy in English, French and Spanish.", h1: "LE H — MC, Event Host & Live Showman in Paris" },
+    es: { title: "LE H | MC de Festivales, Conciertos y Clubs en París, Francia", description: "Contrata a LE H, MC y presentador de espectáculos en París e Île-de-France, para festivales, conciertos y clubs en Francia y en todo el mundo. Animación en español, francés e inglés.", h1: "LE H — MC y Presentador de Espectáculos en París" },
   },
   festivals: {
-    fr: { title: "LE H — MC et Host de Festival | Showman Live", description: "LE H anime les festivals : présentation des artistes, énergie du public et interaction sur scène. Photos, vidéos live et booking international.", h1: "LE H — MC de Festival" },
-    en: { title: "LE H — Festival MC & Main Stage Host | Live Showman", description: "Discover LE H's festival performances: main stage hosting, artist introductions and crowd energy. Watch live videos and book a multilingual festival MC.", h1: "LE H — Festival MC & Host" },
-    es: { title: "LE H — MC y Presentador de Festivales | Showman en Vivo", description: "Descubre a LE H en festivales: presentación de artistas, animación del público y energía en el escenario. Fotos, vídeos y contratación internacional.", h1: "LE H — MC de Festivales" },
+    fr: { title: "LE H — MC de Festival à Paris & en France | Showman Live", description: "LE H anime les festivals à Paris, en Île-de-France et partout en France : présentation des artistes, énergie du public et interaction sur scène. Photos, vidéos live et booking.", h1: "LE H — MC de Festival" },
+    en: { title: "LE H — Festival MC in Paris & France | Main Stage Host", description: "Discover LE H's festival performances in Paris, Île-de-France and across France: main stage hosting, artist introductions and crowd energy. Watch live videos and book a multilingual festival MC.", h1: "LE H — Festival MC & Host" },
+    es: { title: "LE H — MC de Festivales en París y Francia | Showman en Vivo", description: "Descubre a LE H en festivales de París, Île-de-France y toda Francia: presentación de artistas, animación del público y energía en el escenario. Fotos, vídeos y contratación.", h1: "LE H — MC de Festivales" },
   },
   concerts: {
-    fr: { title: "LE H — MC de Concert et Première Partie | Host Live", description: "LE H chauffe la salle et accompagne les concerts : premières parties, présentation des artistes et interludes. Découvrez ses vidéos et réservez un MC live.", h1: "LE H — MC de Concert" },
-    en: { title: "LE H — Concert MC & Opening Act Host | Live Shows", description: "Book LE H for concert warm-ups, opening acts and live show hosting. Explore performance videos, artist introductions and crowd interaction on stage.", h1: "LE H — Concert MC & Live Host" },
-    es: { title: "LE H — MC de Conciertos y Telonero | Espectáculos en Vivo", description: "LE H anima conciertos y primeras partes con energía, interacción con el público y presentación de artistas. Vídeos en vivo y contratación de MC.", h1: "LE H — MC de Conciertos" },
+    fr: { title: "LE H — MC de Concert à Paris | Premières Parties & Host Live", description: "LE H chauffe les salles de concert à Paris et en Île-de-France : premières parties, présentation des artistes et interludes. Découvrez ses vidéos et réservez un MC live.", h1: "LE H — MC de Concert" },
+    en: { title: "LE H — Concert MC in Paris | Opening Acts & Live Shows", description: "Book LE H for concert warm-ups and opening acts in Paris, Île-de-France and across France. Explore performance videos, artist introductions and crowd interaction on stage.", h1: "LE H — Concert MC & Live Host" },
+    es: { title: "LE H — MC de Conciertos en París | Telonero y Espectáculos en Vivo", description: "LE H anima conciertos y primeras partes en París, Île-de-France y toda Francia con energía, interacción con el público y presentación de artistas. Vídeos en vivo y contratación.", h1: "LE H — MC de Conciertos" },
   },
   clubs: {
-    fr: { title: "LE H — MC de Club et Soirée | Hypeman & Showman", description: "LE H, MC de club et hypeman : freestyle au micro, énergie du dancefloor et complicité avec le DJ. Vidéos live, after-shows et booking international.", h1: "LE H — MC de Club & Hypeman" },
-    en: { title: "LE H — Club MC & Hypeman | Nightlife Event Host", description: "Book LE H as your club MC and hypeman for nightlife events and after-shows. Mic freestyle, crowd interaction and DJ connection. Explore live performances.", h1: "LE H — Club MC & Hypeman" },
-    es: { title: "LE H — MC de Club y Hypeman | Animador de Fiestas", description: "Contrata a LE H para clubs, fiestas y after-shows: freestyle al micro, conexión con el DJ y energía en la pista. Descubre sus actuaciones en vivo.", h1: "LE H — MC de Club y Hypeman" },
+    fr: { title: "LE H — MC de Club à Paris | Hypeman & Soirées", description: "LE H, MC de club et hypeman à Paris et en Île-de-France : freestyle au micro, énergie du dancefloor et complicité avec le DJ. Vidéos live, after-shows et booking.", h1: "LE H — MC de Club & Hypeman" },
+    en: { title: "LE H — Club MC & Hypeman in Paris | Nightlife Host", description: "Book LE H as your club MC and hypeman in Paris and Île-de-France for nightlife events and after-shows. Mic freestyle, crowd interaction and DJ connection.", h1: "LE H — Club MC & Hypeman" },
+    es: { title: "LE H — MC de Club y Hypeman en París | Fiestas y After-shows", description: "Contrata a LE H para clubs y fiestas en París e Île-de-France: freestyle al micro, conexión con el DJ y energía en la pista. Descubre sus actuaciones en vivo.", h1: "LE H — MC de Club y Hypeman" },
   },
 };
 
