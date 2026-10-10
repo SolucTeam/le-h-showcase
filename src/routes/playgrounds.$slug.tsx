@@ -1,52 +1,42 @@
 import { createFileRoute, Link, notFound } from "@tanstack/react-router";
 import { getPlayground, PLAYGROUNDS } from "@/lib/playgrounds";
 import { useI18n, LangSwitcher } from "@/lib/i18n";
+import { getPageCopy, localizedHead, resolveLanguage } from "@/lib/seo";
 
 const BOOKING_EMAIL = "lehbookingpro@gmail.com";
 
 export const Route = createFileRoute("/playgrounds/$slug")({
-  loader: ({ params }) => {
+  loaderDeps: ({ search }) => ({ lang: resolveLanguage(search.lang) }),
+  loader: ({ params, deps }) => {
     const pg = getPlayground(params.slug);
     if (!pg) throw notFound();
-    return { slug: pg.slug };
+    return { slug: pg.slug, lang: deps.lang };
   },
-  head: ({ params }) => {
-    const pg = getPlayground(params.slug);
-    if (!pg) {
-      return { meta: [{ title: "Playground introuvable — LE H" }, { name: "robots", content: "noindex" }] };
-    }
-    const title = `${pg.slug === "festivals" ? "Festivals" : pg.slug === "clubs" ? "Clubs" : "Concert & Live"} — LE H, Host & Showman`;
-    const description = "Images, vidéos et détails des prestations de LE H, host & showman. Booking : lehbookingpro@gmail.com";
-    return {
-      meta: [
-        { title },
-        { name: "description", content: description },
-        { property: "og:title", content: title },
-        { property: "og:description", content: description },
-        { property: "og:type", content: "article" },
-        { name: "twitter:card", content: "summary_large_image" },
-      ],
-    };
-  },
+  head: ({ params, loaderData }) => localizedHead(
+    params.slug === "festivals" ? "festivals" : params.slug === "clubs" ? "clubs" : "concerts",
+    `/playgrounds/${params.slug}`,
+    loaderData?.lang ?? "fr",
+  ),
   component: PlaygroundPage,
   notFoundComponent: () => (
     <div className="min-h-screen flex flex-col items-center justify-center gap-6 bg-background text-foreground">
       <h1 className="font-display text-4xl uppercase">Playground introuvable</h1>
-      <Link to="/" className="text-accent uppercase text-xs tracking-[0.3em] font-bold">← Retour</Link>
+      <Link to="/" search={previous => ({ ...previous })} className="text-accent uppercase text-xs tracking-[0.3em] font-bold">← Retour</Link>
     </div>
   ),
 });
 
 function PlaygroundPage() {
   const { slug } = Route.useLoaderData();
-  const { t } = useI18n();
-  const pg = getPlayground(slug)!;
+  const { t, lang } = useI18n();
+  const pg = getPlayground(slug);
+  if (!pg) throw notFound();
   const others = PLAYGROUNDS.filter((p) => p.slug !== pg.slug);
 
   return (
     <div className="min-h-screen bg-background text-foreground font-sans overflow-x-hidden">
       <nav className="fixed top-0 inset-x-0 z-50 flex justify-between items-center px-6 md:px-12 py-6 mix-blend-difference">
-        <Link to="/" className="font-display text-xl tracking-tighter text-white">
+        <Link to="/" search={previous => ({ ...previous })} className="font-display text-xl tracking-tighter text-white">
           LE H<span className="text-accent animate-flicker">.</span>
         </Link>
         <div className="flex items-center gap-4">
@@ -67,8 +57,8 @@ function PlaygroundPage() {
         <div className="relative z-10 px-6 md:px-16 pb-14 w-full max-w-7xl mx-auto animate-fade-up">
           <span className="text-accent font-mono text-[10px] tracking-[0.3em]">{pg.n}</span>
           <p className="mt-4 text-[11px] uppercase tracking-[0.3em] text-accent font-bold">{t(pg.tagKey)}</p>
-          <h1 className="font-display text-[12vw] md:text-[6vw] leading-[0.9] uppercase tracking-tighter whitespace-pre-line">
-            {t(pg.titleKey)}
+          <h1 className="font-display text-4xl sm:text-5xl lg:text-6xl leading-[1.1] uppercase tracking-normal text-balance">
+            {getPageCopy(slug === "festivals" ? "festivals" : slug === "clubs" ? "clubs" : "concerts", lang).h1}
           </h1>
         </div>
       </header>
@@ -129,6 +119,7 @@ function PlaygroundPage() {
               key={o.slug}
               to="/playgrounds/$slug"
               params={{ slug: o.slug }}
+              search={{ lang }}
               className="text-[11px] uppercase tracking-[0.25em] font-bold border border-white/15 px-4 py-3 hover:border-accent hover:text-accent transition-colors"
             >
               {t(o.tagKey)} →
@@ -136,7 +127,7 @@ function PlaygroundPage() {
           ))}
         </div>
         <div className="flex gap-4 items-center">
-          <Link to="/" className="text-[11px] uppercase tracking-[0.25em] text-white/60 hover:text-accent font-bold">
+          <Link to="/" search={previous => ({ ...previous })} className="text-[11px] uppercase tracking-[0.25em] text-white/60 hover:text-accent font-bold">
             ← {t("pg.back")}
           </Link>
           <a

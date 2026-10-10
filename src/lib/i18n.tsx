@@ -1,4 +1,6 @@
 import { createContext, useContext, useEffect, useMemo, useState, type ReactNode } from "react";
+import { useNavigate, useSearch } from "@tanstack/react-router";
+import { resolveLanguage } from "@/lib/seo";
 
 export type Lang = "fr" | "en" | "es";
 
@@ -262,18 +264,12 @@ const LangContext = createContext<Ctx | null>(null);
 function syncLangSideEffects(l: Lang) {
   if (typeof document === "undefined") return;
   document.documentElement.lang = l;
-  // Update canonical to reflect the active language variant
-  let canonical = document.querySelector<HTMLLinkElement>('link[rel="canonical"]');
-  if (!canonical) {
-    canonical = document.createElement("link");
-    canonical.rel = "canonical";
-    document.head.appendChild(canonical);
-  }
-  canonical.setAttribute("href", `/?lang=${l}`);
 }
 
 export function LangProvider({ children }: { children: ReactNode }) {
-  const [lang, setLangState] = useState<Lang>("fr");
+  const search = useSearch({ strict: false });
+  const navigate = useNavigate();
+  const lang = resolveLanguage(search.lang);
   useEffect(() => {
     let initial: Lang | null = null;
     try {
@@ -290,18 +286,14 @@ export function LangProvider({ children }: { children: ReactNode }) {
       }
     } catch {}
     const resolved: Lang = initial ?? "fr";
-    setLangState(resolved);
+    if (!search.lang) void navigate({ to: ".", search: previous => ({ ...previous, lang: resolved }), replace: true });
     syncLangSideEffects(resolved);
   }, []);
+  useEffect(() => { syncLangSideEffects(lang); }, [lang]);
   const setLang = (l: Lang) => {
-    setLangState(l);
+    void navigate({ to: ".", search: previous => ({ ...previous, lang: l }), replace: true });
     try { localStorage.setItem("leh_lang", l); } catch {}
     syncLangSideEffects(l);
-    try {
-      const url = new URL(window.location.href);
-      url.searchParams.set("lang", l);
-      window.history.replaceState({}, "", url.toString());
-    } catch {}
   };
   const value = useMemo<Ctx>(() => ({
     lang,
