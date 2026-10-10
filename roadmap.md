@@ -8,3 +8,4 @@
 - [x] Localize titles, descriptions and H1s for English and Spanish across every content page, preserving the signature slogan.
 - [x] Verify server-rendered metadata and language switching on all pages.
 - [x] Move the downloadable documents from the profile section into the booking section; verify in FR/EN/ES on desktop and mobile.
+- [x] Move the downloadable documents from the profile section into the booking section; verify in FR/EN/ES on desktop and mobile.
