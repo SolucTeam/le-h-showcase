@@ -16,6 +16,10 @@ import reelGalaMobileUrl from "@/assets/reel-gala-m.mp4";
 import reelClubMobileUrl from "@/assets/reel-club-m.mp4";
 import { Hero3D } from "@/components/Hero3D";
 import { LangSwitcher, useI18n } from "@/lib/i18n";
+import { Download } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import pressKitAsset from "@/assets/press-kit.pdf.asset.json";
+import contractAsset from "@/assets/booking-contract.pdf.asset.json";
 
 const BOOKING_EMAIL = "lehbookingpro@gmail.com";
 
@@ -891,6 +895,24 @@ function Index() {
                   </div>
                 </Tilt3D>
               </div>
+            </div>
+            <div className="mt-10 grid grid-cols-1 sm:grid-cols-2 gap-6 border-t border-border pt-6">
+              {[
+                { key: "press", asset: pressKitAsset },
+                { key: "contract", asset: contractAsset },
+              ].map(({ key, asset }) => (
+                <div key={key} className="min-w-0 flex items-center justify-between gap-3">
+                  <div className="min-w-0">
+                    <p className="font-display text-sm text-foreground">{t(`docs.${key}`)}</p>
+                    <p className="mt-1 text-xs leading-relaxed text-muted-foreground">{t(`docs.${key}.info`)}</p>
+                  </div>
+                  <Button asChild variant="outline" size="icon" className="shrink-0 text-accent">
+                    <a href={asset.url} download={asset.original_filename} aria-label={`${t("docs.download")} — ${t(`docs.${key}`)}`} title={`${t("docs.download")} — ${t(`docs.${key}`)}`}>
+                      <Download aria-hidden="true" />
+                    </a>
+                  </Button>
+                </div>
+              ))}
             </div>
           </Reveal>
         </div>
