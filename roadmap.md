@@ -3,5 +3,5 @@
 - [x] Verify desktop, tablet and mobile layouts in all three languages (320, 390, 768, 1086 and 1440 px); no profile overflow.
 - [x] Align profile highlights with live activities and remove television hosting in all languages.
 - [x] Add and verify downloads of the supplied press kit and booking agreement.
-- [ ] Localize titles, descriptions and H1s for English and Spanish across every content page, preserving the signature slogan.
-- [ ] Verify server-rendered metadata and language switching on all pages.
+- [x] Localize titles, descriptions and H1s for English and Spanish across every content page, preserving the signature slogan.
+- [x] Verify server-rendered metadata and language switching on all pages.
