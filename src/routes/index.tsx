@@ -67,7 +67,7 @@ export const Route = createFileRoute("/")({
   component: Index,
 });
 
-function useReveal<T extends HTMLElement>() {
+function useReveal<T extends HTMLElement>(threshold = 0.15) {
   const ref = useRef<T | null>(null);
   const [visible, setVisible] = useState(false);
   useEffect(() => {
@@ -75,11 +75,11 @@ function useReveal<T extends HTMLElement>() {
     if (!el) return;
     const io = new IntersectionObserver(
       ([entry]) => entry.isIntersecting && setVisible(true),
-      { threshold: 0.15 },
+      { threshold },
     );
     io.observe(el);
     return () => io.disconnect();
-  }, []);
+  }, [threshold]);
   return { ref, visible };
 }
 
@@ -87,12 +87,14 @@ function Reveal({
   children,
   delay = 0,
   className = "",
+  threshold = 0.15,
 }: {
   children: React.ReactNode;
   delay?: number;
   className?: string;
+  threshold?: number;
 }) {
-  const { ref, visible } = useReveal<HTMLDivElement>();
+  const { ref, visible } = useReveal<HTMLDivElement>(threshold);
   return (
     <div
       ref={ref}
@@ -802,10 +804,10 @@ function Index() {
       {/* ====== About ====== */}
       <section id="about" className="py-20 md:py-28 px-6 md:px-12">
         <div className="max-w-5xl mx-auto">
-          <Reveal>
+          <Reveal threshold={0.01}>
             <div className="grid grid-cols-1 md:grid-cols-12 gap-8 md:gap-10 items-center">
               {/* Text — left, compact */}
-              <div className="min-w-0 md:col-span-8 space-y-6 text-sm leading-[1.7] text-foreground/65 [overflow-wrap:anywhere]">
+              <div className="min-w-0 self-center md:col-span-8 space-y-4 text-sm leading-[1.7] text-foreground/65 [overflow-wrap:anywhere]">
                 <div>
                 <span className="text-accent font-bold uppercase tracking-[0.3em] text-[10px] block mb-3">
                   {t("about.eyebrow")}
@@ -868,7 +870,7 @@ function Index() {
               </div>
 
               {/* Portrait — right, smaller, no sticky */}
-              <div className="min-w-0 w-full max-w-xs mx-auto md:max-w-none md:col-span-4">
+              <div className="min-w-0 self-center w-full max-w-xs mx-auto md:max-w-none md:col-span-4">
                 <Tilt3D max={6}>
                   <div className="relative aspect-[3/4] overflow-hidden border border-foreground/10 noise">
                     <img
