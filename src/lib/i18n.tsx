@@ -268,7 +268,7 @@ function syncLangSideEffects(l: Lang) {
 
 export function LangProvider({ children }: { children: ReactNode }) {
   const search = useSearch({ strict: false });
-  const navigate = useNavigate({ from: "__root__" });
+  const navigate = useNavigate();
   const lang = resolveLanguage(search.lang);
   useEffect(() => {
     let initial: Lang | null = null;
@@ -286,12 +286,12 @@ export function LangProvider({ children }: { children: ReactNode }) {
       }
     } catch {}
     const resolved: Lang = initial ?? "fr";
-    if (!search.lang) void navigate({ search: previous => ({ ...previous, lang: resolved }), replace: true });
+    if (!search.lang) void navigate({ to: ".", search: previous => ({ ...previous, lang: resolved }), replace: true });
     syncLangSideEffects(resolved);
   }, []);
   useEffect(() => { syncLangSideEffects(lang); }, [lang]);
   const setLang = (l: Lang) => {
-    void navigate({ search: previous => ({ ...previous, lang: l }), replace: true });
+    void navigate({ to: ".", search: previous => ({ ...previous, lang: l }), replace: true });
     try { localStorage.setItem("leh_lang", l); } catch {}
     syncLangSideEffects(l);
   };
