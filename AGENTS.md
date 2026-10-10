@@ -10,3 +10,4 @@
 <!-- LOVABLE:END -->
 
 - Store downloadable user-provided documents as Lovable Assets pointers and link to their same-origin URLs with the download attribute, keeping binaries out of the repository.
+- Derive localized route metadata and rendered headings from validated language search parameters; use shared browser-safe SEO copy and router navigation so SSR and language changes stay consistent.
