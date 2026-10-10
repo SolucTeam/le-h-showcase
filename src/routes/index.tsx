@@ -16,6 +16,7 @@ import reelGalaMobileUrl from "@/assets/reel-gala-m.mp4";
 import reelClubMobileUrl from "@/assets/reel-club-m.mp4";
 import { Hero3D } from "@/components/Hero3D";
 import { LangSwitcher, useI18n } from "@/lib/i18n";
+import { getPageCopy, localizedHead, resolveLanguage } from "@/lib/seo";
 import { Download } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import pressKitAsset from "@/assets/press-kit.pdf.asset.json";
@@ -24,33 +25,10 @@ import contractAsset from "@/assets/booking-contract.pdf.asset.json";
 const BOOKING_EMAIL = "lehbookingpro@gmail.com";
 
 export const Route = createFileRoute("/")({
-  head: () => ({
-    meta: [
-      { title: "LE H — Master of Ceremonies & Host | Booking MC International" },
-      {
-        name: "description",
-        content:
-          "LE H — MC & Host professionnel. Galas, clubs, festivals, événements corporate et lancements. Booking international : lehbookingpro@gmail.com",
-      },
-      { name: "keywords", content: "MC, host, master of ceremonies, animateur, gala, festival, club, corporate, LE H, booking" },
-      { property: "og:title", content: "LE H — Master of Ceremonies & Host" },
-      {
-        property: "og:description",
-        content: "Host, MC & Crowd Catalyst. Voice. Rhythm. Presence. Booking 2026–2027.",
-      },
-      { property: "og:type", content: "website" },
-      { property: "og:url", content: "/" },
-      { name: "twitter:title", content: "LE H — Master of Ceremonies & Host" },
-      { name: "twitter:description", content: "Host, MC & Crowd Catalyst. Booking 2026–2027." },
-      { name: "twitter:card", content: "summary_large_image" },
-    ],
-    links: [
-      { rel: "canonical", href: "/" },
-      { rel: "alternate", hreflang: "x-default", href: "/" },
-      { rel: "alternate", hreflang: "fr", href: "/?lang=fr" },
-      { rel: "alternate", hreflang: "en", href: "/?lang=en" },
-      { rel: "alternate", hreflang: "es", href: "/?lang=es" },
-    ],
+  loaderDeps: ({ search }) => ({ lang: resolveLanguage(search.lang) }),
+  loader: ({ deps }) => deps,
+  head: ({ loaderData }) => ({
+    ...localizedHead("home", "/", loaderData?.lang ?? "fr"),
     scripts: [
       {
         type: "application/ld+json",
@@ -550,7 +528,7 @@ function ReelGrid({ reels }: { reels: { n: string; src: string; srcMobile?: stri
 }
 
 function Index() {
-  const { t } = useI18n();
+  const { t, lang } = useI18n();
   const spotRef = useSpotlight<HTMLDivElement>();
   const navDim = useNavDim();
   const heroTitleRef = useParallax<HTMLHeadingElement>(0.18);
@@ -670,19 +648,19 @@ function Index() {
         <div className="relative z-10 w-full max-w-6xl animate-fade-up">
           <div className="flex items-center gap-4 mb-6">
             <span className="h-px w-10 bg-accent" />
-            <p className="text-[11px] uppercase tracking-[0.35em] text-accent font-bold">
-              HOST / SHOWMAN
-            </p>
+            <h1 className="text-sm md:text-base uppercase tracking-normal text-accent font-bold">
+              {getPageCopy("home", lang).h1}
+            </h1>
           </div>
 
-          <h1
+          <div
             ref={heroTitleRef}
             className="font-display uppercase text-[13vw] md:text-[8.5vw] lg:text-[7.5vw] leading-[0.88] tracking-[-0.03em] will-change-transform text-balance"
           >
             <span className="block glitch" data-text="If you don't">If you don't</span>
             <span className="block">know you</span>
             <span className="block shimmer-text animate-glow">gonna know</span>
-          </h1>
+          </div>
 
           <div className="mt-10 md:mt-14 flex flex-col md:flex-row md:items-center gap-6 md:gap-10">
             <div className="flex flex-wrap gap-4">
