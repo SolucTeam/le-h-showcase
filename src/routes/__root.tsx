@@ -12,6 +12,7 @@ import { useEffect, type ReactNode } from "react";
 import appCss from "../styles.css?url";
 import heroImg from "@/assets/hero.webp";
 import { LangProvider } from "@/lib/i18n";
+import { resolveLanguage } from "@/lib/seo";
 import { Hero3D } from "@/components/Hero3D";
 
 import { reportLovableError } from "../lib/lovable-error-reporting";
@@ -155,8 +156,9 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
 });
 
 function RootShell({ children }: { children: ReactNode }) {
+  const { lang } = Route.useSearch();
   return (
-    <html lang="fr">
+    <html lang={resolveLanguage(lang)}>
       <head>
         <HeadContent />
       </head>
