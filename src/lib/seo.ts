@@ -47,6 +47,8 @@ export function localizedHead(page: string, path: string, lang: SiteLanguage) {
       { name: "twitter:title", content: copy.title },
       { name: "twitter:description", content: copy.description },
       { name: "twitter:card", content: "summary_large_image" },
+      { name: "geo.region", content: "FR-IDF" },
+      { name: "geo.placename", content: "Paris" },
     ],
     links: [
       { rel: "canonical", href: url },
