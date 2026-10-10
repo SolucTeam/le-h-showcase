@@ -805,7 +805,7 @@ function Index() {
           <Reveal>
             <div className="grid grid-cols-1 md:grid-cols-12 gap-8 md:gap-10 items-center">
               {/* Text — left, compact */}
-              <div className="min-w-0 md:col-span-8 space-y-6 text-sm leading-[1.7] text-foreground/65 [overflow-wrap:anywhere]">
+              <div className="min-w-0 self-center md:col-span-8 space-y-4 text-sm leading-[1.7] text-foreground/65 [overflow-wrap:anywhere]">
                 <div>
                 <span className="text-accent font-bold uppercase tracking-[0.3em] text-[10px] block mb-3">
                   {t("about.eyebrow")}
@@ -868,7 +868,7 @@ function Index() {
               </div>
 
               {/* Portrait — right, smaller, no sticky */}
-              <div className="min-w-0 w-full max-w-xs mx-auto md:max-w-none md:col-span-4">
+              <div className="min-w-0 self-center w-full max-w-xs mx-auto md:max-w-none md:col-span-4">
                 <Tilt3D max={6}>
                   <div className="relative aspect-[3/4] overflow-hidden border border-foreground/10 noise">
                     <img
