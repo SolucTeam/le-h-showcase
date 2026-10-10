@@ -44,7 +44,6 @@ export function localizedHead(page: string, path: string, lang: SiteLanguage) {
       { property: "og:type", content: page === "home" ? "website" : "article" },
       { property: "og:url", content: url },
       { property: "og:locale", content: { fr: "fr_FR", en: "en_GB", es: "es_ES" }[lang] },
-      ...(["fr", "en", "es"] as const).filter(language => language !== lang).map(language => ({ property: "og:locale:alternate", content: { fr: "fr_FR", en: "en_GB", es: "es_ES" }[language] })),
       { name: "twitter:title", content: copy.title },
       { name: "twitter:description", content: copy.description },
       { name: "twitter:card", content: "summary_large_image" },
