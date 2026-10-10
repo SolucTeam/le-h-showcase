@@ -21,6 +21,7 @@ import { Download } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import pressKitAsset from "@/assets/press-kit.pdf.asset.json";
 import contractAsset from "@/assets/booking-contract.pdf.asset.json";
+import contractIdfAsset from "@/assets/booking-contract-idf.pdf.asset.json";
 
 const BOOKING_EMAIL = "lehbookingpro@gmail.com";
 
@@ -36,8 +37,9 @@ export const Route = createFileRoute("/")({
           "@context": "https://schema.org",
           "@type": "Person",
           name: "LE H",
-          jobTitle: "Master of Ceremonies & Host",
-          description: "MC, host et animateur événementiel international.",
+          jobTitle: getPageCopy("home", loaderData?.lang ?? "fr").h1.replace("LE H — ", ""),
+          description: getPageCopy("home", loaderData?.lang ?? "fr").description,
+          url: `https://le-h-showcase.lovable.app/?lang=${loaderData?.lang ?? "fr"}`,
           email: `mailto:${BOOKING_EMAIL}`,
           image: heroOgImg,
           knowsLanguage: ["fr", "en", "es"],
@@ -662,7 +664,9 @@ function Index() {
             <span className="block shimmer-text animate-glow">gonna know</span>
           </div>
 
-          <div className="mt-10 md:mt-14 flex flex-col md:flex-row md:items-center gap-6 md:gap-10">
+          <p className="mt-6 max-w-2xl text-sm leading-relaxed text-foreground/75">{t("hero.desc")}</p>
+
+          <div className="mt-6 md:mt-8 flex flex-col md:flex-row md:items-center gap-6 md:gap-10">
             <div className="flex flex-wrap gap-4">
               <Magnetic>
                 <a href="#showreel" className="group relative cursor-pointer block">
@@ -877,6 +881,7 @@ function Index() {
             <div className="mt-10 grid grid-cols-1 sm:grid-cols-2 gap-6 border-t border-border pt-6">
               {[
                 { key: "press", asset: pressKitAsset },
+                { key: "contractIdf", asset: contractIdfAsset },
                 { key: "contract", asset: contractAsset },
               ].map(({ key, asset }) => (
                 <div key={key} className="min-w-0 flex items-center justify-between gap-3">
