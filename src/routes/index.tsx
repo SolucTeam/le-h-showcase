@@ -878,25 +878,6 @@ function Index() {
                 </Tilt3D>
               </div>
             </div>
-            <div className="mt-10 grid grid-cols-1 sm:grid-cols-2 gap-6 border-t border-border pt-6">
-              {[
-                { key: "press", asset: pressKitAsset },
-                { key: "contractIdf", asset: contractIdfAsset },
-                { key: "contract", asset: contractAsset },
-              ].map(({ key, asset }) => (
-                <div key={key} className="min-w-0 flex items-center justify-between gap-3">
-                  <div className="min-w-0">
-                    <p className="font-display text-sm text-foreground">{t(`docs.${key}`)}</p>
-                    <p className="mt-1 text-xs leading-relaxed text-muted-foreground">{t(`docs.${key}.info`)}</p>
-                  </div>
-                  <Button asChild variant="outline" size="icon" className="shrink-0 text-accent">
-                    <a href={asset.url} download={asset.original_filename} aria-label={`${t("docs.download")} — ${t(`docs.${key}`)}`} title={`${t("docs.download")} — ${t(`docs.${key}`)}`}>
-                      <Download aria-hidden="true" />
-                    </a>
-                  </Button>
-                </div>
-              ))}
-            </div>
           </Reveal>
         </div>
       </section>
@@ -1024,6 +1005,30 @@ function Index() {
               <a href={`mailto:${BOOKING_EMAIL}`} className="hover:text-accent transition-colors">
                 {BOOKING_EMAIL}
               </a>
+            </div>
+            <div className="mt-14 border-t border-white/10 pt-8 text-left">
+              <p className="font-display text-[10px] uppercase tracking-[0.3em] text-white/60 mb-6">
+                {t("docs.title")}
+              </p>
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-x-8 gap-y-6">
+                {[
+                  { key: "press", asset: pressKitAsset },
+                  { key: "contractIdf", asset: contractIdfAsset },
+                  { key: "contract", asset: contractAsset },
+                ].map(({ key, asset }) => (
+                  <div key={key} className="min-w-0 flex items-center justify-between gap-3">
+                    <div className="min-w-0">
+                      <p className="font-display text-sm text-foreground">{t(`docs.${key}`)}</p>
+                      <p className="mt-1 text-xs leading-relaxed text-muted-foreground">{t(`docs.${key}.info`)}</p>
+                    </div>
+                    <Button asChild variant="outline" size="icon" className="shrink-0 text-accent">
+                      <a href={asset.url} download={asset.original_filename} aria-label={`${t("docs.download")} — ${t(`docs.${key}`)}`} title={`${t("docs.download")} — ${t(`docs.${key}`)}`}>
+                        <Download aria-hidden="true" />
+                      </a>
+                    </Button>
+                  </div>
+                ))}
+              </div>
             </div>
           </Reveal>
         </div>
